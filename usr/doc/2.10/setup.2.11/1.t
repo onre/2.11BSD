@@ -2,7 +2,7 @@
 .\" All rights reserved.  The Berkeley software License Agreement
 .\" specifies the terms and conditions for redistribution.
 .\"
-.\"	@(#)1.t	2.5 (GTE) 1997/1/24
+.\"	@(#)1.t	2.6 (2.11BSD) 2020/1/4
 .\"
 .ds lq ``
 .ds rq ''
@@ -162,9 +162,9 @@ X in section Y of the UNIX programmer's manual.
 followed by a full dump of a root file system (see \fIdump\fP\|(8)).
 Following the root file system dump is a tape archive image of \fB/usr\fP
 except for \fB/usr/src\fP (see \fItar\fP\|(1)).  Finally, a tape archive
-of source for include files and kernel source ends the first tape.  The
+of the kernel source ends the first tape.  The
 second tape contains a tape archive image, also in \fItar\fP format, of
-all the remaining source that comes with the system.
+the remaining source that comes with the system.
 .PP
 The entire distribution (barely) fits on a single TK50 cartridge, references to
 the second tape should be treated as being the 9th file on the TK50.  Many of
@@ -187,7 +187,7 @@ _
 4	1024	32	standalone \fBicheck\fP(8)
 5	10240	285	\fIdump\fP of ``root'' file system
 6	10240	3368	\fItar\fP dump of /usr, excepting /usr/src
-7	10240	519	\fItar\fP dump of /usr/src/include and /usr/src/sys
+7	10240	519	\fItar\fP dump of /usr/src/sys
 .TE
 
 TAPE 2:
@@ -195,7 +195,7 @@ TAPE 2:
 n n n l.
 Tape file	Record size	Records\(ua	Contents
 _
-0	10240	4092	\fItar\fP dump of /usr/src, excepting include and sys
+0	10240	4092	\fItar\fP dump of /usr/src excepting sys
 .TE
 .DE
 .KE

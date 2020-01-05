@@ -2,7 +2,7 @@
 .\" All rights reserved.  The Berkeley software License Agreement
 .\" specifies the terms and conditions for redistribution.
 .\"
-.\"	@(#)2.t	1.10 (GTE) 1997/8/11
+.\"	@(#)2.t	1.11 (2.11BSD) 2020/1/4
 .\"
 .ds lq ``
 .ds rq ''
@@ -61,7 +61,7 @@ appropriate \fIsector 0 boot block\fP to your boot device.
 Build and restore the /usr file system from tape
 with \fItar\fP\|(1).
 .IP 7)
-Restore the include and kernel sources from tape.
+Restore the kernel sources from tape.
 .IP 8)
 Extract the remaining source from the second tape.
 .IP 9)
@@ -535,7 +535,7 @@ TK50 and TZ30 which are \fBmuch\fP slower)
 .DE
 The data on the seventh tape file has now been extracted.
 All that remains on the first tape is a small archive containing
-source for the kernel and include files.
+the kernel source files.
 .PP
 If you have an existing/old password file to be merged back into
 \*(2B, special steps are necessary to convert the old password file
@@ -547,7 +547,7 @@ lw(2i) l.
 \fB#\fP mt -f /dev/rmt12 fsf	(position tape at beginning of next tape file)
 \fB#\fP mkdir src	(make directory for source)
 \fB#\fP cd src	(make /usr/src the current directory)
-\fB#\fP tar xpbf 20 /dev/rmt12 	(extract the system and include source)
+\fB#\fP tar xpbf 20 /dev/rmt12 	(extract the system source)
 (this takes about 5-10 minutes)
 \fB#\fP cd /	(back to root)
 \fB#\fP chmod 755  /  /usr  /usr/src /usr/src/sys
