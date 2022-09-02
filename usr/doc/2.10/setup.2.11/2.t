@@ -2,7 +2,7 @@
 .\" All rights reserved.  The Berkeley software License Agreement
 .\" specifies the terms and conditions for redistribution.
 .\"
-.\"	@(#)2.t	1.11 (2.11BSD) 2020/1/4
+.\"	@(#)2.t	1.12 (2.11BSD) 2022/8/30
 .\"
 .ds lq ``
 .ds rq ''
@@ -416,6 +416,7 @@ rluboot	rl	RL01/02
 si95uboot	si	SI 9500, CDC 9766
 dvhpuboot	xp	Diva Comp V, Ampex 9300
 hpuboot	xp	RP04/05/06
+rp07uboot	xp	RP07
 rm03uboot	xp	RM03
 rm05uboot	xp	RM05 or SI 9500, CDC 9766
 si51uboot	xp	SI 6100, Fujitsu Eagle 2351A
@@ -466,7 +467,7 @@ l l.
 \fB#\fP disk=hk	(if you have RK06's or RK07's)
 \fB#\fP disk=rl	(if you have RL01's or RL02's)
 \fB#\fP disk=ra	(if you have an MSCP drive)
-\fB#\fP disk=xp	(if you have an RP06, RM03, RM05, or other SMD drive)
+\fB#\fP disk=xp	(if you have an RP04/5/6/7, RM03, RM05, or other SMD drive)
 .TE
 .DE
 .PP
