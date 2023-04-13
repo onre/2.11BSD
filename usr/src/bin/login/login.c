@@ -20,7 +20,7 @@ char copyright[] =
 "@(#) Copyright (c) 1980, 1987, 1988 The Regents of the University of California.\n\
  All rights reserved.\n";
 
-static char sccsid[] = "@(#)login.c	5.40.2 (2.11BSD GTE) 1997/9/26";
+static char sccsid[] = "@(#)login.c	5.41 (2.11BSD) 2023/4/13";
 #endif
 
 /*
@@ -95,7 +95,7 @@ main(argc, argv)
 	register int ch;
 	register char *p;
 	int ask, fflag, hflag, pflag, cnt;
-	int quietlog, passwd_req, ioctlval, timedout();
+	int quietlog, passwd_req, ioctlval, oldioctlval, timedout();
 	char *domain, *salt, *envinit[1], *ttyn, *pp;
 	char tbuf[MAXPATHLEN + 2], tname[sizeof(_PATH_TTY) + 10];
 	char *ctime(), *ttyname(), *stypeof(), *crypt(), *getpass();
@@ -155,6 +155,7 @@ main(argc, argv)
 		ask = 1;
 
 	ioctlval = 0;
+	(void)ioctl(0, TIOCLGET, &oldioctlval);
 	(void)ioctl(0, TIOCLSET, &ioctlval);
 	(void)ioctl(0, TIOCNXCL, 0);
 	(void)fcntl(0, F_SETFL, ioctlval);
@@ -391,6 +392,8 @@ main(argc, argv)
 		ioctlval = NTTYDISC;
 		(void)ioctl(0, TIOCSETD, &ioctlval);
 	}
+
+	(void)ioctl(0, TIOCLSET, &oldioctlval);
 
 	/* destroy environment unless user has requested preservation */
 	if (!pflag)

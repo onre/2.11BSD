@@ -5,7 +5,7 @@
  */
 
 #if	!defined(lint) && defined(DOSCCS)
-static char sccsid[] = "@(#)init.c	5.2.2 (2.11BSD GTE) 1997/3/28";
+static char sccsid[] = "@(#)init.c	5.3 (2.11BSD) 2023/4/13";
 #endif
 
 /*
@@ -82,5 +82,6 @@ struct	gettyflags gettyflags[] = {
 	{ "ab", 0 },			/* auto-baud detect with '\r' */
 	{ "dx", 0 },			/* set decctlq */
 	{ "hf", 0 },			/* set HardwareFlowcontrol */
+	{ "np", 0 },			/* no parity (ie. pass8) */
 	{ 0 }
 };

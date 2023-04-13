@@ -3,7 +3,7 @@
  * All rights reserved.  The Berkeley software License Agreement
  * specifies the terms and conditions for redistribution.
  *
- *	@(#)dz.c	1.4 (2.11BSD GTE) 1997/2/14
+ *	@(#)dz.c	1.5 (2.11BSD) 2023/4/13
  */
 
 /*
@@ -120,6 +120,7 @@ dzopen(dev, flag)
 {
 	register struct tty *tp;
 	register int unit;
+	register int s;
 
 	unit = UNIT(dev);
 	if (unit >= NDZLINE || dzpdma[unit].pd_addr == 0)
@@ -153,12 +154,12 @@ dzopen(dev, flag)
 	else
 		dzsoftCAR[unit >> 3] &= ~(1<<(unit&07));
 #endif
-	(void) _spl5();
+	s = spltty();
 	while ((tp->t_state & TS_CARR_ON) == 0) {
 		tp->t_state |= TS_WOPEN;
 		sleep((caddr_t)&tp->t_rawq, TTIPRI);
 	}
-	(void) _spl0();
+	splx(s);
 	return ((*linesw[tp->t_line].l_open)(dev, tp));
 }
 
@@ -414,7 +415,7 @@ dzstart(tp)
 
 	dp = (struct pdma *)tp->t_addr;
 	dzaddr = dp->pd_addr;
-	s = spl5();
+	s = spltty();
 	if (tp->t_state & (TS_TIMEOUT|TS_BUSY|TS_TTSTOP))
 		goto out;
 	if (tp->t_outq.c_cc <= TTLOWAT(tp)) {
@@ -430,7 +431,7 @@ dzstart(tp)
 	}
 	if (tp->t_outq.c_cc == 0)
 		goto out;
-	if (tp->t_flags & (RAW|LITOUT))
+	if (tp->t_flags & (RAW|LITOUT|PASS8))
 		cc = ndqb(&tp->t_outq, 0);
 	else {
 		cc = ndqb(&tp->t_outq, 0200);
@@ -460,7 +461,7 @@ dzstop(tp, flag)
 	register int s;
 
 	dp = (struct pdma *)tp->t_addr;
-	s = spl5();
+	s = spltty();
 	if (tp->t_state & TS_BUSY) {
 		dp->p_end = dp->p_mem;
 		if ((tp->t_state & TS_TTSTOP)==0)
@@ -481,7 +482,7 @@ dzmctl(dev, bits, how)
 	unit = UNIT(dev);
 	b = 1<<(unit&7);
 	dzaddr = dzpdma[unit].pd_addr;
-	s = spl5();
+	s = spltty();
 	mbits = (dzaddr->dzdtr & b) ? DZ_DTR : 0;
 	mbits |= (dzaddr->dzmsr & b) ? DZ_CD : 0;
 	mbits |= (dzaddr->dztbuf & b) ? DZ_RI : 0;
@@ -568,7 +569,7 @@ dztimer()
 
 	if (dzsilos == 0)
 		return;
-	s = spl5();
+	s = spltty();
 	dzfasttimers++;		/*DEBUG*/
 	for (dz = 0; dz < NDZ; dz++)
 		if (dzsilos & (1 << dz))

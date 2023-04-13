@@ -2,9 +2,9 @@
 .\" All rights reserved.  The Berkeley software License Agreement
 .\" specifies the terms and conditions for redistribution.
 .\"
-.\"	@(#)gettytab.5	6.3.1 (2.11BSD) 1997/3/28
+.\"	@(#)gettytab.5	6.4 (2.11BSD) 2023/4/13
 .\"
-.TH GETTYTAB 5 "March 28, 1997"
+.TH GETTYTAB 5 "April 13, 2023"
 .UC 5
 .SH NAME
 gettytab \- terminal configuration data base
@@ -79,6 +79,7 @@ lm	str	login:	login prompt
 ln	str	^V	``literal next'' character
 lo	str	/bin/login	program to exec when name obtained
 nl	bool	false	terminal has (or might have) a newline character
+np	bool	false	terminal uses no parity (i.e. 8-bit characters)
 nx	str	default	next table (for auto speed selection)
 op	bool	false	terminal uses odd parity
 os	num	unused	output speed

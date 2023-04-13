@@ -5,7 +5,7 @@
  */
 
 #if	!defined(lint) && defined(DOSCCS)
-static char sccsid[] = "@(#)subr.c	5.4.2 (2.11BSD GTE) 1997/3/28";
+static char sccsid[] = "@(#)subr.c	5.5 (2.11BSD) 2023/4/13";
 #endif
 
 /*
@@ -179,6 +179,8 @@ setflags(n)
 		f |= CTLECH;
 	if (DX)
 		f |= DECCTQ;
+	if (NP)
+		f |= PASS8;
 	return (f);
 }
 
