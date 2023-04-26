@@ -1,12 +1,10 @@
 #
-# Public Domain.  1996/11/16 - Steven Schultz
-#
-#	@(#)Makefile	1.0 (2.11BSD) 1996/11/16
+#	@(#)Makefile	2.0 (2.11BSD) 2023/4/26
 #
 CFLAGS=	 -O
 SEPFLAG= -i
-SRCS=	telnetd.c
-OBJS=	telnetd.o
+SRCS=	telnetd.c gettytab.c subr.c init.c
+OBJS=	telnetd.o gettytab.o subr.o init.o
 MAN=	telnetd.0
 MANSRC=	telnetd.8
 
@@ -24,9 +22,9 @@ clean:
 depend: ${SRCS}
 	mkdep ${CFLAGS} ${SRCS}
 
-install: telnetd
+install: telnetd ${MAN}
 	install -c -o bin -g bin -m 444 ${MAN} ${DESTDIR}/usr/man/cat8
-	install -s -o root -g bin -m 755 telnetd ${DESTDIR}/usr/libexec/telnetd
+	install -c -s -o root -g bin -m 755 telnetd ${DESTDIR}/usr/libexec/telnetd
 
 lint: ${SRCS}
 	lint -hax ${SRCS}

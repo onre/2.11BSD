@@ -13,7 +13,7 @@
 CC = cc
 bin = /usr/games
 mansrc = /tmp
-CFLAGS = -O -O
+CFLAGS = -O
 LDFLAGS = 
 CHOWNER = bin
 privlib = /usr/games/lib/warp

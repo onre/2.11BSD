@@ -23,16 +23,20 @@ static char sccsid[] = "@(#)telnetd.c	5.20.3 (2.11BSD) 1996/11/16";
 #include <sys/time.h>
 
 #include <netinet/in.h>
-
+#include <arpa/inet.h>
 #include <arpa/telnet.h>
 
 #include <stdio.h>
 #include <signal.h>
 #include <errno.h>
+#include <unistd.h>
 #include <sgtty.h>
 #include <netdb.h>
 #include <syslog.h>
 #include <ctype.h>
+#include <strings.h>
+
+#include "gettytab.h"
 
 #define	OPT_NO			0		/* won't do this option */
 #define	OPT_YES			1		/* will do this option */
@@ -46,26 +50,39 @@ char	dont[] = { IAC, DONT, '%', 'c', 0 };
 char	will[] = { IAC, WILL, '%', 'c', 0 };
 char	wont[] = { IAC, WONT, '%', 'c', 0 };
 
+struct	sgttyb tmode = {
+	0, 0, CERASE, CKILL, 0
+};
+struct	tchars tc = {
+	CINTR, CQUIT, CSTART,
+	CSTOP, CEOF, CBRK,
+};
+struct	ltchars ltc = {
+	CSUSP, CDSUSP, CRPRNT,
+	CFLUSH, CWERASE, CLNEXT
+};
+char	hostname[32];
+
+#define	TABBUFSIZ	512
+
+char	defent[TABBUFSIZ];
+char	defstrs[TABBUFSIZ];
+char	tabent[TABBUFSIZ];
+char	tabstrs[TABBUFSIZ];
+
 /*
  * I/O data buffers, pointers, and counters.
  */
 char	ptyibuf[BUFSIZ], *ptyip = ptyibuf;
-
 char	ptyobuf[BUFSIZ], *pfrontp = ptyobuf, *pbackp = ptyobuf;
-
 char	netibuf[BUFSIZ], *netip = netibuf;
-#define	NIACCUM(c)	{   *netip++ = c; \
-			    ncc++; \
-			}
+
+#define	NIACCUM(c)	{ *netip++ = c; ncc++; }
 
 char	netobuf[BUFSIZ], *nfrontp = netobuf, *nbackp = netobuf;
 char	*neturg = 0;		/* one past last bye of urgent data */
 	/* the remote system seems to NOT be an old 4.2 */
 int	not42 = 1;
-
-
-char BANNER1[] = "\r\n\r\n2.11 BSD UNIX (",
-    BANNER2[] = ")\r\n\r\0\r\n\r\0";
 
 		/* buffer for sub-options */
 char	subbuffer[100], *subpointer= subbuffer, *subend= subbuffer;
@@ -77,14 +94,13 @@ char	subbuffer[100], *subpointer= subbuffer, *subend= subbuffer;
 #define	SB_GET()	((*subpointer++)&0xff)
 #define	SB_EOF()	(subpointer >= subend)
 
-int	pcc, ncc;
-
-int	pty, net;
-int	inter;
-extern	char **environ;
-extern	int errno;
-char	*line;
+int	pcc, ncc, pty, net, inter;
 int	SYNCHing = 0;		/* we are in TELNET SYNCH mode */
+char	*line;
+
+extern char **environ;
+extern void makeenv();
+
 /*
  * The following are some clocks used to decide how to interpret
  * the relationship between various variables.
@@ -166,7 +182,7 @@ main(argc, argv)
 }
 
 char	*terminaltype = 0;
-char	*envinit[2];
+char	*env[128];
 int	cleanup();
 
 /*
@@ -237,11 +253,14 @@ doit(f, who)
 	int f;
 	struct sockaddr_in *who;
 {
-	char *host, *inet_ntoa();
-	int i, p, t;
+	char *host;
+	int i, j, p, c;
+        register int t;
 	struct sgttyb b;
 	struct hostent *hp;
-	int c;
+	int ldisp = OTTYDISC;
+	long allflags;
+	int someflags;
 
 	for (c = 'p'; c <= 's'; c++) {
 		struct stat stb;
@@ -279,12 +298,28 @@ gotpty:
 	t = open(line, O_RDWR);
 	if (t < 0)
 		fatalperror(f, line);
-	ioctl(t, TIOCGETP, &b);
-	b.sg_flags = CRMOD|XTABS|ANYP;
-	ioctl(t, TIOCSETP, &b);
-	ioctl(p, TIOCGETP, &b);
-	b.sg_flags &= ~ECHO;
+
+	gethostname(hostname, sizeof (hostname));
+
+	gettable("default", defent, defstrs);
+	gendefaults();
+	gettable("telnetd", tabent, tabstrs);
+	setdefaults();
+
+	setchars();
+	ioctl(p, TIOCSETC, &tc);
+	ioctl(p, TIOCSETD, &ldisp);
+	allflags = setflags(2);
+	b.sg_flags = allflags & 0xffff;
+	someflags = allflags >> 16;
 	ioctl(p, TIOCSETP, &b);
+	ioctl(p, TIOCSLTC, &ltc);
+	ioctl(p, TIOCLSET, &someflags);
+
+	edithost(HE);
+	if (IM && *IM)
+		putf(p, IM);
+
 	hp = gethostbyaddr(&who->sin_addr, sizeof (struct in_addr),
 		who->sin_family);
 	if (hp)
@@ -310,18 +345,29 @@ gotpty:
 	dup2(t, 1);
 	dup2(t, 2);
 	close(t);
-	envinit[0] = terminaltype;
-	envinit[1] = 0;
-	environ = envinit;
+
+	/* Create our environment by copying selected parts of
+	 * the given environment, plus adding whatever comes from
+	 * terminal type, and gettytab.
+	 */
+	j = 0;
+	for (i = 0; environ[i] != (char *)0; i++) {
+		if (islower(environ[i][0])) continue;
+		if (strncmp(environ[i], "INET=", 5) == 0) continue;
+		if (strncmp(environ[i], "PATH=", 5) == 0) continue;
+		env[j++] = environ[i];
+	}
+	makeenv(&env[j], terminaltype);
+
 	/*
 	 * -h : pass on name of host.
 	 *		WARNING:  -h is accepted by login if and only if
 	 *			getuid() == 0.
 	 * -p : don't clobber the environment (so terminal type stays set).
 	 */
-	execl("/bin/login", "login", "-h", host,
-					terminaltype ? "-p" : 0, 0);
-	fatalperror(f, "/bin/login");
+	execle(LO, "login", "-h", host, "-p", 0, env);
+
+	fatalperror(f, LO);
 	/*NOTREACHED*/
 }
 
@@ -346,11 +392,9 @@ fatalperror(f, msg)
 	fatal(f, buf);
 }
 
-
 /*
  * Check a descriptor to see if out of band data exists on it.
  */
-
 
 stilloob(s)
 int	s;		/* socket number */
@@ -382,7 +426,6 @@ int	s;		/* socket number */
 telnet(f, p)
 {
 	int on = 1;
-	char hostname[MAXHOSTNAMELEN];
 
 	ioctl(f, FIONBIO, &on);
 	ioctl(p, FIONBIO, &on);
@@ -416,22 +459,6 @@ telnet(f, p)
 	sprintf(nfrontp, doopt, TELOPT_ECHO);
 	nfrontp += sizeof doopt-2;
 	hisopts[TELOPT_ECHO] = OPT_YES_BUT_ALWAYS_LOOK;
-
-	/*
-	 * Show banner that getty never gave.
-	 *
-	 * The banner includes some null's (for TELNET CR disambiguation),
-	 * so we have to be somewhat complicated.
-	 */
-
-	gethostname(hostname, sizeof (hostname));
-
-	bcopy(BANNER1, nfrontp, sizeof BANNER1 -1);
-	nfrontp += sizeof BANNER1 - 1;
-	bcopy(hostname, nfrontp, strlen(hostname));
-	nfrontp += strlen(hostname);
-	bcopy(BANNER2, nfrontp, sizeof BANNER2 -1);
-	nfrontp += sizeof BANNER2 - 1;
 
 	/*
 	 * Call telrcv() once to pick up anything received during
@@ -973,7 +1000,7 @@ suboption()
 {
     switch (SB_GET()) {
     case TELOPT_TTYPE: {		/* Yaaaay! */
-	static char terminalname[5+41] = "TERM=";
+	static char terminalname[41] = "";
 
 	settimer(ttypesubopt);
 
@@ -1282,4 +1309,44 @@ rmut()
 	line[strlen("/dev/")] = 'p';
 	chmod(line, 0666);
 	chown(line, 0, 0);
+}
+
+putf(p, cp)
+	int p;
+	register char *cp;
+{
+	char *ttyn, *slash;
+	char datebuffer[60];
+	extern char editedhost[];
+
+	while (*cp) {
+		if (*cp != '%') {
+			*(nfrontp++) = *(cp++);
+			continue;
+		}
+		switch (*++cp) {
+
+		case 't':
+			ttyn = ttyname(p);
+			slash = rindex(ttyn, '/');
+			if (slash == (char *) 0) {
+				memcpy(nfrontp, ttyn, strlen(ttyn));
+				nfrontp += strlen(ttyn);
+			} else {
+				memcpy(nfrontp, slash+1, strlen(slash+1));
+				nfrontp += strlen(slash+1);
+			}
+			break;
+
+		case 'h':
+			memcpy(nfrontp, editedhost, strlen(editedhost));
+			nfrontp += strlen(editedhost);
+			break;
+
+		case '%':
+			*(nfrontp++) = '%';
+			break;
+		}
+		cp++;
+	}
 }

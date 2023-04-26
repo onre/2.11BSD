@@ -1,3 +1,762 @@
+/*
+ * Copyright (c) 1980 Regents of the University of California.
+ * All rights reserved.  The Berkeley software License Agreement
+ * specifies the terms and conditions for redistribution.
+ *
+ *	@(#)gettytab.h	5.3 (2.11BSD) 2023/4/13
+ */
+
+/*
+ * Getty description definitions.
+ */
+struct	gettystrs {
+	char	*field;		/* name to lookup in gettytab */
+	char	*defalt;	/* value we find by looking in defaults */
+	char	*value;		/* value that we find there */
+};
+
+struct	gettynums {
+	char	*field;		/* name to lookup */
+	long	defalt;		/* number we find in defaults */
+	long	value;		/* number we find there */
+	int	set;		/* we actually got this one */
+};
+
+struct gettyflags {
+	char	*field;		/* name to lookup */
+	char	invrt;		/* name existing in gettytab --> false */
+	char	defalt;		/* true/false in defaults */
+	char	value;		/* true/false flag */
+	char	set;		/* we found it */
+};
+
+/*
+ * String values.
+ */
+#define	NX	gettystrs[0].value
+#define	CL	gettystrs[1].value
+#define IM	gettystrs[2].value
+#define	LM	gettystrs[3].value
+#define	ER	gettystrs[4].value
+#define	KL	gettystrs[5].value
+#define	ET	gettystrs[6].value
+#define	PC	gettystrs[7].value
+#define	TT	gettystrs[8].value
+#define	EV	gettystrs[9].value
+#define	LO	gettystrs[10].value
+#define HN	gettystrs[11].value
+#define HE	gettystrs[12].value
+#define IN	gettystrs[13].value
+#define QU	gettystrs[14].value
+#define XN	gettystrs[15].value
+#define XF	gettystrs[16].value
+#define BK	gettystrs[17].value
+#define SU	gettystrs[18].value
+#define DS	gettystrs[19].value
+#define RP	gettystrs[20].value
+#define FL	gettystrs[21].value
+#define WE	gettystrs[22].value
+#define LN	gettystrs[23].value
+
+/*
+ * Numeric definitions.
+ */
+#define	IS	gettynums[0].value
+#define	OS	gettynums[1].value
+#define	SP	gettynums[2].value
+#define	TO	gettynums[3].value
+#define	F0	gettynums[4].value
+#define	F0set	gettynums[4].set
+#define	F1	gettynums[5].value
+#define	F1set	gettynums[5].set
+#define	F2	gettynums[6].value
+#define	F2set	gettynums[6].set
+#define	PF	gettynums[7].value
+
+/*
+ * Boolean values.
+ */
+#define	HT	gettyflags[0].value
+#define	NL	gettyflags[1].value
+#define	EP	gettyflags[2].value
+#define	EPset	gettyflags[2].set
+#define	OP	gettyflags[3].value
+#define	OPset	gettyflags[2].set
+#define	AP	gettyflags[4].value
+#define	APset	gettyflags[2].set
+#define	GEC	gettyflags[5].value
+#define	CO	gettyflags[6].value
+#define	CB	gettyflags[7].value
+#define	CK	gettyflags[8].value
+#define	CE	gettyflags[9].value
+#define	PE	gettyflags[10].value
+#define	RW	gettyflags[11].value
+#define	XC	gettyflags[12].value
+#define	IG	gettyflags[13].value
+#define	PS	gettyflags[14].value
+#define	HC	gettyflags[15].value
+#define UB	gettyflags[16].value
+#define AB	gettyflags[17].value
+#define DX	gettyflags[18].value
+#define HF	gettyflags[19].value
+#define NP	gettyflags[20].value
+
+int	getent();
+long	getnum();
+int	getflag();
+char	*getstr();
+
+long	setflags();
+
+extern	struct gettyflags gettyflags[];
+extern	struct gettynums gettynums[];
+extern	struct gettystrs gettystrs[];
+extern	int hopcount;
+/*
+ * Copyright (c) 1980 Regents of the University of California.
+ * All rights reserved.  The Berkeley software License Agreement
+ * specifies the terms and conditions for redistribution.
+ */
+
+#if	!defined(lint) && defined(DOSCCS)
+static char sccsid[] = "@(#)subr.c	5.5 (2.11BSD) 2023/4/13";
+#endif
+
+/*
+ * Melbourne getty.
+ */
+#include <sgtty.h>
+#include "gettytab.h"
+
+extern	struct sgttyb tmode;
+extern	struct tchars tc;
+extern	struct ltchars ltc;
+
+/*
+ * Get a table entry.
+ */
+gettable(name, buf, area)
+	char *name, *buf, *area;
+{
+	register struct gettystrs *sp;
+	register struct gettynums *np;
+	register struct gettyflags *fp;
+	long ln;
+	int n;
+
+	hopcount = 0;		/* new lookup, start fresh */
+	if (getent(buf, name) != 1)
+		return;
+
+	for (sp = gettystrs; sp->field; sp++)
+		sp->value = getstr(sp->field, &area);
+	for (np = gettynums; np->field; np++) {
+		ln = getnum(np->field);
+		if (ln == -1)
+			np->set = 0;
+		else {
+			np->set = 1;
+			np->value = ln;
+		}
+	}
+	for (fp = gettyflags; fp->field; fp++) {
+		n = getflag(fp->field);
+		if (n == -1)
+			fp->set = 0;
+		else {
+			fp->set = 1;
+			fp->value = n ^ fp->invrt;
+		}
+	}
+}
+
+gendefaults()
+{
+	register struct gettystrs *sp;
+	register struct gettynums *np;
+	register struct gettyflags *fp;
+
+	for (sp = gettystrs; sp->field; sp++)
+		if (sp->value)
+			sp->defalt = sp->value;
+	for (np = gettynums; np->field; np++)
+		if (np->set)
+			np->defalt = np->value;
+	for (fp = gettyflags; fp->field; fp++)
+		if (fp->set)
+			fp->defalt = fp->value;
+		else
+			fp->defalt = fp->invrt;
+}
+
+setdefaults()
+{
+	register struct gettystrs *sp;
+	register struct gettynums *np;
+	register struct gettyflags *fp;
+
+	for (sp = gettystrs; sp->field; sp++)
+		if (!sp->value)
+			sp->value = sp->defalt;
+	for (np = gettynums; np->field; np++)
+		if (!np->set)
+			np->value = np->defalt;
+	for (fp = gettyflags; fp->field; fp++)
+		if (!fp->set)
+			fp->value = fp->defalt;
+}
+
+static char **
+charnames[] = {
+	&ER, &KL, &IN, &QU, &XN, &XF, &ET, &BK,
+	&SU, &DS, &RP, &FL, &WE, &LN, 0
+};
+
+static char *
+charvars[] = {
+	&tmode.sg_erase, &tmode.sg_kill, &tc.t_intrc,
+	&tc.t_quitc, &tc.t_startc, &tc.t_stopc,
+	&tc.t_eofc, &tc.t_brkc, &ltc.t_suspc,
+	&ltc.t_dsuspc, &ltc.t_rprntc, &ltc.t_flushc,
+	&ltc.t_werasc, &ltc.t_lnextc, 0
+};
+
+setchars()
+{
+	register int i;
+	register char *p;
+
+	for (i = 0; charnames[i]; i++) {
+		p = *charnames[i];
+		if (p && *p)
+			*charvars[i] = *p;
+		else
+			*charvars[i] = '\377';
+	}
+}
+
+long
+setflags(n)
+{
+	register long f;
+
+	switch (n) {
+	case 0:
+		if (F0set)
+			return(F0);
+		break;
+	case 1:
+		if (F1set)
+			return(F1);
+		break;
+	default:
+		if (F2set)
+			return(F2);
+		break;
+	}
+
+	f = 0;
+
+	if (AP)
+		f |= ANYP;
+	else if (OP)
+		f |= ODDP;
+	else if (EP)
+		f |= EVENP;
+	if (HF)
+		f |= RTSCTS;
+	if (NL)
+		f |= CRMOD;
+
+	if (n == 1) {		/* read mode flags */
+		if (RW)
+			f |= RAW;
+		else
+			f |= CBREAK;
+		return (f);
+	}
+
+	if (!HT)
+		f |= XTABS;
+	if (n == 0)
+		return (f);
+	if (CB)
+		f |= CRTBS;
+	if (CE)
+		f |= CRTERA;
+	if (CK)
+		f |= CRTKIL;
+	if (PE)
+		f |= PRTERA;
+	if (GEC)
+		f |= ECHO;
+	if (XC)
+		f |= CTLECH;
+	if (DX)
+		f |= DECCTQ;
+	if (NP)
+		f |= PASS8;
+	return (f);
+}
+
+char	editedhost[32];
+
+edithost(pat)
+	register char *pat;
+{
+	register char *host = HN;
+	register char *res = editedhost;
+
+	if (!pat)
+		pat = "";
+	while (*pat) {
+		switch (*pat) {
+
+		case '#':
+			if (*host)
+				host++;
+			break;
+
+		case '@':
+			if (*host)
+				*res++ = *host++;
+			break;
+
+		default:
+			*res++ = *pat;
+			break;
+
+		}
+		if (res == &editedhost[sizeof editedhost - 1]) {
+			*res = '\0';
+			return;
+		}
+		pat++;
+	}
+	if (*host)
+		strncpy(res, host, sizeof editedhost - (res - editedhost) - 1);
+	else
+		*res = '\0';
+	editedhost[sizeof editedhost - 1] = '\0';
+}
+
+void makeenv(env, term)
+	char *env[];
+        char *term;
+{
+	static char termbuf[128] = "TERM=";
+	register char *p, *q;
+	register char **ep;
+	char *index();
+
+	ep = env;
+	if (*term) {
+		strcat(termbuf, term);
+		*ep++ = termbuf;
+	}
+	if (p = EV) {
+		q = p;
+		while (q = index(q, ',')) {
+			*q++ = '\0';
+			*ep++ = p;
+			p = q;
+		}
+		if (*p)
+			*ep++ = p;
+	}
+	*ep = (char *)0;
+}
+/*
+ * Copyright (c) 1980 Regents of the University of California.
+ * All rights reserved.  The Berkeley software License Agreement
+ * specifies the terms and conditions for redistribution.
+ */
+
+#if !defined(lint) && defined(DOSCCS)
+static char sccsid[] = "@(#)gettytab.c	5.2 (2.11BSD) 2023/4/26";
+#endif
+
+#include <ctype.h>
+
+#define	TABBUFSIZ	512
+
+static	char *tbuf;
+int	hopcount;	/* detect infinite loops in termcap, init 0 */
+char	*skip(), *getstr(), *decode();
+
+/*
+ * Get an entry for terminal name in buffer bp,
+ * from the termcap file.  Parse is very rudimentary;
+ * we just notice escaped newlines.
+ */
+getent(bp, name)
+	char *bp, *name;
+{
+	register char *cp;
+	int c, tf;
+	register int i = 0, cnt = 0;
+	char ibuf[TABBUFSIZ];
+
+	tbuf = bp;
+	tf = open("/etc/gettytab", 0);
+	if (tf < 0)
+		return (-1);
+	for (;;) {
+		cp = bp;
+		for (;;) {
+			if (i == cnt) {
+				cnt = read(tf, ibuf, TABBUFSIZ);
+				if (cnt <= 0) {
+					close(tf);
+					return (0);
+				}
+				i = 0;
+			}
+			c = ibuf[i++];
+			if (c == '\n') {
+				if (cp > bp && cp[-1] == '\\'){
+					cp--;
+					continue;
+				}
+				break;
+			}
+			if (cp >= bp+TABBUFSIZ) {
+				write(2,"Gettytab entry too long\n", 24);
+				break;
+			} else
+				*cp++ = c;
+		}
+		*cp = 0;
+
+		/*
+		 * The real work for the match.
+		 */
+		if (namatch(name)) {
+			close(tf);
+			return(nchktc());
+		}
+	}
+}
+
+/*
+ * tnchktc: check the last entry, see if it's tc=xxx. If so,
+ * recursively find xxx and append that entry (minus the names)
+ * to take the place of the tc=xxx entry. This allows termcap
+ * entries to say "like an HP2621 but doesn't turn on the labels".
+ * Note that this works because of the left to right scan.
+ */
+#define	MAXHOP	32
+nchktc()
+{
+	register char *p, *q;
+	char tcname[16];	/* name of similar terminal */
+	char tcbuf[TABBUFSIZ];
+	char *holdtbuf = tbuf;
+	int l;
+
+	p = tbuf + strlen(tbuf) - 2;	/* before the last colon */
+	while (*--p != ':')
+		if (p<tbuf) {
+			write(2, "Bad gettytab entry\n", 19);
+			return (0);
+		}
+	p++;
+	/* p now points to beginning of last field */
+	if (p[0] != 't' || p[1] != 'c')
+		return(1);
+	strcpy(tcname,p+3);
+	q = tcname;
+	while (q && *q != ':')
+		q++;
+	*q = 0;
+	if (++hopcount > MAXHOP) {
+		write(2, "Getty: infinite tc= loop\n", 25);
+		return (0);
+	}
+	if (getent(tcbuf, tcname) != 1)
+		return(0);
+	for (q=tcbuf; *q != ':'; q++)
+		;
+	l = p - holdtbuf + strlen(q);
+	if (l > TABBUFSIZ) {
+		write(2, "Gettytab entry too long\n", 24);
+		q[TABBUFSIZ - (p-tbuf)] = 0;
+	}
+	strcpy(p, q+1);
+	tbuf = holdtbuf;
+	return(1);
+}
+
+/*
+ * Tnamatch deals with name matching.  The first field of the termcap
+ * entry is a sequence of names separated by |'s, so we compare
+ * against each such name.  The normal : terminator after the last
+ * name (before the first field) stops us.
+ */
+namatch(np)
+	char *np;
+{
+	register char *Np, *Bp;
+
+	Bp = tbuf;
+	if (*Bp == '#')
+		return(0);
+	for (;;) {
+		for (Np = np; *Np && *Bp == *Np; Bp++, Np++)
+			continue;
+		if (*Np == 0 && (*Bp == '|' || *Bp == ':' || *Bp == 0))
+			return (1);
+		while (*Bp && *Bp != ':' && *Bp != '|')
+			Bp++;
+		if (*Bp == 0 || *Bp == ':')
+			return (0);
+		Bp++;
+	}
+}
+
+/*
+ * Skip to the next field.  Notice that this is very dumb, not
+ * knowing about \: escapes or any such.  If necessary, :'s can be put
+ * into the termcap file in octal.
+ */
+static char *
+skip(bp)
+	register char *bp;
+{
+
+	while (*bp && *bp != ':')
+		bp++;
+	while (*bp == ':')
+		bp++;
+	return (bp);
+}
+
+/*
+ * Return the (numeric) option id.
+ * Numeric options look like
+ *	li#80
+ * i.e. the option string is separated from the numeric value by
+ * a # character.  If the option is not found we return -1.
+ * Note that we handle octal numbers beginning with 0.
+ */
+long
+getnum(id)
+	char *id;
+{
+	register long i, base;
+	register char *bp = tbuf;
+
+	for (;;) {
+		bp = skip(bp);
+		if (*bp == 0)
+			return (-1);
+		if (*bp++ != id[0] || *bp == 0 || *bp++ != id[1])
+			continue;
+		if (*bp == '@')
+			return(-1);
+		if (*bp != '#')
+			continue;
+		bp++;
+		base = 10;
+		if (*bp == '0')
+			base = 8;
+		i = 0;
+		while (isdigit(*bp))
+			i *= base, i += *bp++ - '0';
+		return (i);
+	}
+}
+
+/*
+ * Handle a flag option.
+ * Flag options are given "naked", i.e. followed by a : or the end
+ * of the buffer.  Return 1 if we find the option, or 0 if it is
+ * not given.
+ */
+getflag(id)
+	char *id;
+{
+	register char *bp = tbuf;
+
+	for (;;) {
+		bp = skip(bp);
+		if (!*bp)
+			return (-1);
+		if (*bp++ == id[0] && *bp != 0 && *bp++ == id[1]) {
+			if (!*bp || *bp == ':')
+				return (1);
+			else if (*bp == '!')
+				return (0);
+			else if (*bp == '@')
+				return(-1);
+		}
+	}
+}
+
+/*
+ * Get a string valued option.
+ * These are given as
+ *	cl=^Z
+ * Much decoding is done on the strings, and the strings are
+ * placed in area, which is a ref parameter which is updated.
+ * No checking on area overflow.
+ */
+char *
+getstr(id, area)
+	char *id, **area;
+{
+	register char *bp = tbuf;
+
+	for (;;) {
+		bp = skip(bp);
+		if (!*bp)
+			return (0);
+		if (*bp++ != id[0] || *bp == 0 || *bp++ != id[1])
+			continue;
+		if (*bp == '@')
+			return(0);
+		if (*bp != '=')
+			continue;
+		bp++;
+		return (decode(bp, area));
+	}
+}
+
+/*
+ * Tdecode does the grung work to decode the
+ * string capability escapes.
+ */
+static char *
+decode(str, area)
+	register char *str;
+	char **area;
+{
+	register char *cp;
+	register int c;
+	register char *dp;
+	int i;
+
+	cp = *area;
+	while ((c = *str++) && c != ':') {
+		switch (c) {
+
+		case '^':
+			c = *str++ & 037;
+			break;
+
+		case '\\':
+			dp = "E\033^^\\\\::n\nr\rt\tb\bf\f";
+			c = *str++;
+nextc:
+			if (*dp++ == c) {
+				c = *dp++;
+				break;
+			}
+			dp++;
+			if (*dp)
+				goto nextc;
+			if (isdigit(c)) {
+				c -= '0', i = 2;
+				do
+					c <<= 3, c |= *str++ - '0';
+				while (--i && isdigit(*str));
+			}
+			break;
+		}
+		*cp++ = c;
+	}
+	*cp++ = 0;
+	str = *area;
+	*area = cp;
+	return (str);
+}
+/*
+ * Copyright (c) 1980 Regents of the University of California.
+ * All rights reserved.  The Berkeley software License Agreement
+ * specifies the terms and conditions for redistribution.
+ */
+
+#if	!defined(lint) && defined(DOSCCS)
+static char sccsid[] = "@(#)init.c	5.3 (2.11BSD) 2023/4/13";
+#endif
+
+/*
+ * Getty table initializations.
+ *
+ * Melbourne getty.
+ */
+#include <sgtty.h>
+#include "gettytab.h"
+
+extern  struct sgttyb tmode;
+extern	struct tchars tc;
+extern	struct ltchars ltc;
+extern	char hostname[];
+
+struct	gettystrs gettystrs[] = {
+	{ "nx" },			/* next table */
+	{ "cl" },			/* screen clear characters */
+	{ "im" },			/* initial message */
+	{ "lm", "login: " },		/* login message */
+	{ "er", &tmode.sg_erase },	/* erase character */
+	{ "kl", &tmode.sg_kill },	/* kill character */
+	{ "et", &tc.t_eofc },		/* eof chatacter (eot) */
+	{ "pc", "" },			/* pad character */
+	{ "tt" },			/* terminal type */
+	{ "ev" },			/* enviroment */
+	{ "lo", "/bin/login" },		/* login program */
+	{ "hn", hostname },		/* host name */
+	{ "he" },			/* host name edit */
+	{ "in", &tc.t_intrc },		/* interrupt char */
+	{ "qu", &tc.t_quitc },		/* quit char */
+	{ "xn", &tc.t_startc },		/* XON (start) char */
+	{ "xf", &tc.t_stopc },		/* XOFF (stop) char */
+	{ "bk", &tc.t_brkc },		/* brk char (alt \n) */
+	{ "su", &ltc.t_suspc },		/* suspend char */
+	{ "ds", &ltc.t_dsuspc },	/* delayed suspend */
+	{ "rp", &ltc.t_rprntc },	/* reprint char */
+	{ "fl", &ltc.t_flushc },	/* flush output */
+	{ "we", &ltc.t_werasc },	/* word erase */
+	{ "ln", &ltc.t_lnextc },	/* literal next */
+	{ 0 }
+};
+
+struct	gettynums gettynums[] = {
+	{ "is" },			/* input speed */
+	{ "os" },			/* output speed */
+	{ "sp" },			/* both speeds */
+	{ "to" },			/* timeout */
+	{ "f0" },			/* output flags */
+	{ "f1" },			/* input flags */
+	{ "f2" },			/* user mode flags */
+	{ "pf" },			/* delay before flush at 1st prompt */
+	{ 0 }
+};
+
+struct	gettyflags gettyflags[] = {
+	{ "ht",	0 },			/* has tabs */
+	{ "nl",	1 },			/* has newline char */
+	{ "ep",	0 },			/* even parity */
+	{ "op",	0 },			/* odd parity */
+	{ "ap",	0 },			/* any parity */
+	{ "ec",	1 },			/* no echo */
+	{ "co",	0 },			/* console special */
+	{ "cb",	0 },			/* crt backspace */
+	{ "ck",	0 },			/* crt kill */
+	{ "ce",	0 },			/* crt erase */
+	{ "pe",	0 },			/* printer erase */
+	{ "rw",	1 },			/* don't use raw */
+	{ "xc",	1 },			/* don't ^X ctl chars */
+	{ "ig",	0 },			/* ignore garbage */
+	{ "ps",	0 },			/* do port selector speed select */
+	{ "hc",	1 },			/* don't set hangup on close */
+	{ "ub", 0 },			/* unbuffered output */
+	{ "ab", 0 },			/* auto-baud detect with '\r' */
+	{ "dx", 0 },			/* set decctlq */
+	{ "hf", 0 },			/* set HardwareFlowcontrol */
+	{ "np", 0 },			/* no parity (ie. pass8) */
+	{ 0 }
+};
 MAJOR = 10.			/ major # from bdevsw[]
 
 / Massbus disk bootstrap
