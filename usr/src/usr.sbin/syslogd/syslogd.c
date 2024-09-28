@@ -9,7 +9,7 @@ char copyright[] =
 "@(#) Copyright (c) 1983 Regents of the University of California.\n\
  All rights reserved.\n";
 
-static char sccsid[] = "@(#)syslogd.c	5.13.6 (2.11BSD) 1999/6/18";
+static char sccsid[] = "@(#)syslogd.c	5.13.7 (2.11BSD) 2024/9/28";
 #endif
 
 /*
@@ -421,7 +421,7 @@ printsys(msg)
 	time_t now;
 
 	(void) time(&now);
-	(void) sprintf(line, "%.15s vmunix: ", ctime(&now) + 4);
+	(void) sprintf(line, "%.15s unix: ", ctime(&now) + 4);
 	lp = line + strlen(line);
 	for (p = msg; *p != '\0'; ) {
 		flags = SYNC_FILE;	/* fsync file after write */

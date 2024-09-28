@@ -10,7 +10,7 @@ char copyright[] =
 "@(#) Copyright (c) 1980 Regents of the University of California.\n\
  All rights reserved.\n";
 
-static char sccsid[] = "@(#)pstat.c	5.8.6 (2.11BSD) 1999/9/13";
+static char sccsid[] = "@(#)pstat.c	5.9 (2.11BSD) 2024/9/28";
 #endif
 
 /*
@@ -37,7 +37,7 @@ static char sccsid[] = "@(#)pstat.c	5.8.6 (2.11BSD) 1999/9/13";
 
 char	*fcore	= "/dev/kmem";
 char	*fmem	= "/dev/mem";
-char	*fnlist	= "/vmunix";
+char	*fnlist	= "/unix";
 int	fc, fm;
 
 struct nlist nl[] = {

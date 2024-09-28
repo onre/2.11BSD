@@ -24,7 +24,7 @@ clean:
 depend: ${SRCS}
 	mkdep ${CFLAGS} ${SRCS}
 
-install: syslogd
+install: syslogd syslogd.0
 	install -c -o bin -g bin -m 444 ${MAN} ${DESTDIR}/usr/man/cat8
 	install -s -o root -g bin -m 755 syslogd ${DESTDIR}/usr/sbin/syslogd
 

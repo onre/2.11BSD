@@ -24,7 +24,7 @@ clean:
 depend: ${SRCS}
 	mkdep ${CFLAGS} ${SRCS}
 
-install: bad144
+install: bad144 bad144.0
 	install -c -o bin -g bin -m 444 ${MAN} ${DESTDIR}/usr/man/cat8
 	install -s -o root -g bin -m 755 bad144 ${DESTDIR}/usr/sbin/bad144
 

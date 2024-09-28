@@ -2,9 +2,9 @@
 .\" All rights reserved.  The Berkeley software License Agreement
 .\" specifies the terms and conditions for redistribution.
 .\"
-.\"	@(#)pstat.8	6.3.2 (2.11BSD) 1997/9/2
+.\"	@(#)pstat.8	6.4 (2.11BSD) 2024/9/28
 .\"
-.TH PSTAT 8 "December 28, 2008"
+.TH PSTAT 8 "September 28, 2024"
 .UC 4
 .SH NAME
 pstat \- print system facts
@@ -27,7 +27,7 @@ is given, the tables are sought there, otherwise
 in
 .I /dev/kmem.
 The required namelist is taken from
-.I /vmunix
+.I /unix
 unless 
 .I system
 is specified.
@@ -408,7 +408,7 @@ and is useful for checking to see how full system tables have become if the
 system is under heavy load.
 .SH FILES
 .ta \w'/dev/kmem  'u
-/vmunix	namelist
+/unix	namelist
 .br
 /dev/kmem	default source of tables
 .SH SEE ALSO
@@ -424,5 +424,4 @@ K. Thompson,
 .SH BUGS
 It would be very useful if the system recorded \*(lqmaximum occupancy\*(rq
 on the tables reported by
-.B \-T;
-even more useful if these tables were dynamically allocated.
+.B \-T

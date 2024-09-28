@@ -7,7 +7,7 @@
  */
 
 #if	!defined(lint) && defined(DOSCCS)
-static	char	sccsid[] = "@(#)c00.c	2.3 (2.11BSD) 2022/1/21";
+static	char	sccsid[] = "@(#)c00.c	2.4 (2.11BSD) 2024/9/24";
 #endif
 
 #include "c0.h"
@@ -594,6 +594,9 @@ loop:
 
 	case '\\':
 		switch (a=getc00()) {
+
+		case 'a':
+			return('\007');
 
 		case 't':
 			return('\t');

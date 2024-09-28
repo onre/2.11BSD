@@ -1,5 +1,5 @@
 #if	defined(DOSCCS) && !defined(lint)
-static	char *sccsid = "@(#)arp.c	5.4.1 (2.11BSD GTE) 1/1/94";
+static	char *sccsid = "@(#)arp.c	5.5 (2.11BSD) 2024/9/20";
 #endif
 
 /*
@@ -254,7 +254,7 @@ struct nlist nl[] = {
 };
 
 #ifdef pdp11
-char	unix2_10[] = "/vmunix";
+char	unix2_10[] = "/unix";
 u_int	base2_10;
 struct nlist kl[] = {
 #define	X_NETDATA	0
@@ -374,7 +374,7 @@ ether_aton(a, n)
 usage()
 {
 	printf("Usage: arp hostname\n");
-	printf("       arp -a [/vmunix] [/dev/kmem]\n");
+	printf("       arp -a [/unix] [/dev/kmem]\n");
 	printf("       arp -d hostname\n");
 	printf("       arp -s hostname ether_addr [temp] [pub] [trail]\n");
 	printf("       arp -f filename\n");

@@ -1,5 +1,5 @@
 #if	!defined(lint) && defined(DOSCCS)
-static	char *sccsid = "@(#)iostat.c	4.16 (2.11BSD) 1996/1/8";
+static	char *sccsid = "@(#)iostat.c	4.17 (2.11BSD) 2024/9/20";
 #endif
 
 /*
@@ -82,9 +82,9 @@ main(argc, argv)
 	long t;
 	char *arg, **cp, name[6], buf[BUFSIZ];
 
-	nlist("/vmunix", nl);
+	nlist("/unix", nl);
 	if(nl[X_DK_BUSY].n_type == 0) {
-		printf("dk_busy not found in /vmunix namelist\n");
+		printf("dk_busy not found in /unix namelist\n");
 		exit(1);
 	}
 	mf = open("/dev/kmem", 0);

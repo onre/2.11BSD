@@ -10,6 +10,10 @@
  * handling swapped out processes (it doesn't). - sms
  */
 
+#if     defined(DOSCCS) && !defined(lint)
+static char sccsid[] = "@(#)gcore.c    1.3 (2.11BSD) 2024/9/20";
+#endif
+
 #include <sys/param.h>
 #include <sys/user.h>
 #include <sys/proc.h>
@@ -18,7 +22,7 @@
 #include <nlist.h>
 #include <varargs.h>
 
-#define NLIST	"/vmunix"
+#define NLIST	"/unix"
 #define MEM	"/dev/mem"
 
 struct nlist nl[] = {

@@ -5,7 +5,7 @@
  */
 
 #if	defined(DOSCCS) && !defined(lint)
-static char sccsid[] = "@(#)dmesg.c	5.4.1 (2.11BSD GTE) 1/1/94";
+static char sccsid[] = "@(#)dmesg.c	5.5 (2.11BSD) 2024/9/28";
 #endif
 
 /*
@@ -41,9 +41,7 @@ char **argv;
 	int mem;
 	register char *mp, *omp, *mstart;
 	int samef, sawnl, ignore;
-#ifdef	pdp11
 	char msgb[MSG_BSIZE];
-#endif
 
 	if (argc>1 && argv[1][0] == '-') {
 		sflg++;
@@ -58,11 +56,7 @@ char **argv;
 		lseek(of, 0L, 0);
 	}
 	sflg = 0;
-#ifdef pdp11
 	nlist(argc>2? argv[2]:"/unix", nl);
-#else
-	nlist(argc>2? argv[2]:"/vmunix", nl);
-#endif
 	if (nl[0].n_type==0)
 		done("Can't get kernel namelist\n");
 	if ((mem = open((argc>1? argv[1]: "/dev/mem"), 0)) < 0)
@@ -75,11 +69,9 @@ char **argv;
 		msgbuf.msg_bufx = 0;
 	if (omesg.msg_bufx >= MSG_BSIZE)
 		omesg.msg_bufx = 0;
-#ifdef	pdp11
 	msgbuf.msg_bufc = msgb;
 	lseek(mem, (long)ctob((long)msgbuf.msg_click), 0);
 	read(mem, msgbuf.msg_bufc, MSG_BSIZE);
-#endif
 	mstart = &msgbuf.msg_bufc[omesg.msg_bufx];
 	omp = &omesg.msg_bufc[msgbuf.msg_bufx];
 	mp = msgbufp = &msgbuf.msg_bufc[msgbuf.msg_bufx];

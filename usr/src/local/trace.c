@@ -18,10 +18,10 @@ main(argc, argv)
 	register i;
 	int	iter;
 
-	nlist("/vmunix", nl);
+	nlist("/unix", nl);
 	if	(nl[0].n_type == 0)
 		{
-		fprintf(stderr, "no /vmunix namelist\n");
+		fprintf(stderr, "no /unix namelist\n");
 		exit(1);
 	}
 	mf = open("/dev/kmem", 0);

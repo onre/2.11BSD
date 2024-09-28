@@ -1,5 +1,5 @@
 #if	defined(DOSCCS) && !defined(lint)
-static char sccsid[] = "@(#)acucntrl.c	5.8.2 (2.11BSD GTE) 1996/3/22";
+static char sccsid[] = "@(#)acucntrl.c	5.9 (2.11BSD) 2024/9/20";
 #endif
 
 /*  acucntrl - turn around tty line between dialin and dialout
@@ -177,7 +177,7 @@ int argc; char *argv[];
 	opnttys(device);
 
 	/* Get nlist info */
-	nlist("/vmunix", nl);
+	nlist("/unix", nl);
 
 	/* Chdir to /dev */
 	if(chdir(Devhome) < 0) {

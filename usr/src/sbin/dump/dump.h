@@ -1,5 +1,5 @@
 /*
- * "@(#)dump.h	1.2 (2.11BSD GTE) 12/6/94"
+ * "@(#)dump.h	1.3 (2.11BSD) 2024/9/18"
  */
 #define	NI	4	/* number of blocks of inodes per read */
 
@@ -80,7 +80,7 @@ int	interrupt();		/* in case operator bangs on console */
 /*
  *	Exit status codes
  */
-#define	X_FINOK		1	/* normal exit */
+#define	X_FINOK		0	/* normal exit */
 #define	X_REWRITE	2	/* restart writing from the check point */
 #define	X_ABORT		3	/* abort all of dump; don't attempt checkpointing*/
 

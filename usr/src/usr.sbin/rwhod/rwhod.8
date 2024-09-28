@@ -2,9 +2,9 @@
 .\" All rights reserved.  The Berkeley software License Agreement
 .\" specifies the terms and conditions for redistribution.
 .\"
-.\"	@(#)rwhod.8	6.2.1 (2.11BSD) 1996/11/16
+.\"	@(#)rwhod.8	6.3 (2.11BSD) 2024/9/20
 .\"
-.TH RWHOD 8 "November 16, 1996"
+.TH RWHOD 8 "Sep 20, 2024"
 .UC 5
 .SH NAME
 rwhod \- system status server
@@ -93,12 +93,6 @@ format described above.
 .PP
 Status messages are generated approximately once every
 3 minutes.
-.I Rwhod
-performs an
-.IR nlist (3)
-on /vmunix every 30 minutes to guard against
-the possibility that this file is not the system
-image currently operating.
 .SH "SEE ALSO"
 rwho(1),
 ruptime(1)

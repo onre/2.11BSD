@@ -5,7 +5,7 @@
  */
 
 #if	!defined(lint) && defined(DOSCCS)
-static char sccsid[] = "@(#)trpt.c	5.3 (2.11BSD) 2020/1/7";
+static char sccsid[] = "@(#)trpt.c	5.4 (2.11BSD) 2024/9/28";
 #endif not lint
 
 #include <sys/param.h>
@@ -62,7 +62,7 @@ main(argc, argv)
 	char **argv;
 {
 	int i, mask = 0, npcbs = 0;
-	char *system = "/vmunix", *core = "/dev/kmem";
+	char *system = "/unix", *core = "/dev/kmem";
 
 	argc--, argv++;
 again:

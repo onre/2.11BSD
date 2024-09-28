@@ -9,7 +9,7 @@ disktype disk
 bad ...
 ] ]
 .SH DESCRIPTION
-.I Bad144
+.I bad144
 can be used to inspect the information stored on a disk that is used by
 the disk drivers to implement bad sector forwarding.  The format of
 the information is specified by DEC standard 144, as follows.
@@ -26,7 +26,7 @@ of the bad sector in the bad sector table determines which replacement
 sector it corresponds to.
 .PP
 The bad sector information and replacement sectors are conventionally
-only accessible through the ``h'' file system partition of the disk.  If
+only accessible through the ``c'' file system partition of the disk.  If
 that partition is used for a file system, the user is responsible for
 making sure that it does not overlap the bad sector information or any
 replacement sectors.

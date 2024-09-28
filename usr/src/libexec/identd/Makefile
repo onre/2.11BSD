@@ -4,6 +4,8 @@
 # This program is in the public domain and may be used freely by anyone
 # who wants to. 
 #
+# Update: 26 September 2024 - add idecrypt.0 to install target
+#
 # Last update: 13 December 1996 - 2.11BSD specific version created.
 #
 # Please send bug fixes/bug reports to: Peter Eriksson <pen@lysator.liu.se>
@@ -57,7 +59,7 @@ idecrypt.0: idecrypt.man
 identconn: identconn.sh
 	sed -e 's,xDESTROOTx,$(DESTROOT),g' $? > $@
 
-install: identd identd.0 identconn itest idecrypt
+install: identd identd.0 idecrypt.0 identconn itest idecrypt
 	install -m 644 identd.0 $(MANDIR)/identd.0
 	install -m 755 identd $(EXECDIR)/identd
 	install -m 755 identconn $(BINDIR)/identconn

@@ -3,7 +3,7 @@
  * All rights reserved.  The Berkeley software License Agreement
  * specifies the terms and conditions for redistribution.
  *
- *	@(#)systm.h	1.3 (2.11BSD GTE) 1996/5/9
+ *	@(#)systm.h	1.4 (2.11BSD) 2024/9/28
  */
 
 #ifndef SUPERVISOR
@@ -30,7 +30,7 @@
  * (/etc/rc.local) using sysctl(8). If it is desired to run the system
  * in level 0 mode while multiuser, initialize the variable securelevel
  * in /sys/kern/kern_sysctl.c to -1. Note that it is NOT initialized to
- * zero as that would allow the vmunix binary to be patched to -1.
+ * zero as that would allow the unix binary to be patched to -1.
  * Without initialization, securelevel loads in the BSS area which only
  * comes into existence when the kernel is loaded and hence cannot be
  * patched by a stalking hacker.

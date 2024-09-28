@@ -15,7 +15,7 @@ char copyright[] =
 "@(#) Copyright (c) 1987 Regents of the University of California.\n\
  All rights reserved.\n";
 
-static char sccsid[] = "@(#)fstat.c	5.11.1 (2.11BSD GTE) 12/31/93";
+static char sccsid[] = "@(#)fstat.c	5.12 (2.11BSD) 2024/9/20";
 #endif
 
 /*
@@ -56,8 +56,8 @@ static char sccsid[] = "@(#)fstat.c	5.11.1 (2.11BSD GTE) 12/31/93";
 
 #define	N_KMEM	"/dev/kmem"
 #define	N_MEM	"/dev/mem"
-#define	N_SWAP	"/dev/drum"
-#define	N_UNIX	"/vmunix"
+#define	N_SWAP	"/dev/swap"
+#define	N_UNIX	"/unix"
 
 #define	TEXT	-2
 #define	WD	-1

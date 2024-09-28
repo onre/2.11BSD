@@ -1,7 +1,7 @@
 #
 # Public Domain.  1996/11/16 - Steven Schultz
 #
-#	@(#)Makefile	1.0 (2.11BSD) 1996/11/16
+#	@(#)Makefile	1.1 (2.11BSD) 2024/9/28
 #
 CFLAGS=	 -O
 SEPFLAG= -i
@@ -24,7 +24,7 @@ clean:
 depend: ${SRCS}
 	mkdep ${CFLAGS} ${SRCS}
 
-install: dmesg
+install: dmesg dmesg.0
 	install -c -o bin -g bin -m 444 ${MAN} ${DESTDIR}/usr/man/cat8
 	install -s -o bin -g kmem -m 2755 dmesg ${DESTDIR}/sbin/dmesg
 

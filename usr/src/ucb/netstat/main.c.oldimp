@@ -15,7 +15,7 @@ char copyright[] =
 "@(#) Copyright (c) 1983 Regents of the University of California.\n\
  All rights reserved.\n";
 
-static char sccsid[] = "@(#)main.c	5.8.1 (2.11BSD GTE) 1/1/94";
+static char sccsid[] = "@(#)main.c	5.9 (2.11BSD) 2024/9/20";
 #endif
 
 #include <sys/param.h>
@@ -176,7 +176,7 @@ struct protox nsprotox[] = {
 
 struct	pte *Sysmap;
 
-char	*system = "/vmunix";
+char	*system = "/unix";
 #ifndef pdp11
 char	*kmemf = "/dev/kmem";
 #else

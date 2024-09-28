@@ -2,9 +2,9 @@
 .\" All rights reserved.  The Berkeley software License Agreement
 .\" specifies the terms and conditions for redistribution.
 .\"
-.\"	@(#)arp.8c	6.2 (Berkeley) 5/20/86
+.\"	@(#)arp.8c	6.3 (2.11BSD) 2024/9/20
 .\"
-.TH ARP 8C "May 20, 1986"
+.TH ARP 8C "Sep 20, 2024"
 .UC 6
 .SH NAME
 arp \- address resolution display and control
@@ -14,7 +14,7 @@ arp \- address resolution display and control
 .br
 .B arp -a
 [
-.I vmunix
+.I unix
 ] [
 .I kmem
 ]
@@ -51,8 +51,8 @@ flag, the program displays all of the current ARP entries by reading the table
 from the file
 .I kmem
 (default /dev/kmem) based on the kernel file 
-.I vmunix 
-(default /vmunix).
+.I unix 
+(default /unix).
 .LP
 With the
 .B -d
@@ -98,4 +98,4 @@ in the file should be of the form
 .LP
 with argument meanings as given above.
 .SH "SEE ALSO"
-inet(3N), arp(4P), ifconfig(8C)
+inet(4), arp(4), ifconfig(8)

@@ -1,7 +1,7 @@
 #
 # Public Domain.  1996/11/16 - Steven Schultz
 #
-#	@(#)Makefile	1.0 (2.11BSD) 1996/11/16
+#	@(#)Makefile	1.1 (2.11BSD) 2024/9/26
 #
 CFLAGS=	 -O
 SEPFLAG= -i
@@ -24,7 +24,7 @@ clean:
 depend: ${SRCS}
 	mkdep ${CFLAGS} ${SRCS}
 
-install: rwhod
+install: rwhod rwhod.0
 	install -c -o bin -g bin -m 444 ${MAN} ${DESTDIR}/usr/man/cat8
 	install -s -o root -g bin -m 755 rwhod ${DESTDIR}/usr/sbin/rwhod
 

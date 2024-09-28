@@ -9,7 +9,7 @@ char copyright[] =
 "@(#) Copyright (c) 1980 Regents of the University of California.\n\
  All rights reserved.\n";
 
-static char sccsid[] = "@(#)vmstat.c	5.4.2 (2.11BSD GTE) 1997/3/28";
+static char sccsid[] = "@(#)vmstat.c	5.5 (2.11BSD) 2024/9/20";
 #endif
 
 #include <stdio.h>
@@ -163,9 +163,9 @@ main(argc, argv)
 	long nintv, t;
 	char *arg, **cp, buf[BUFSIZ];
 
-	nlist("/vmunix", nl);
+	nlist("/unix", nl);
 	if(nl[0].n_type == 0) {
-		fprintf(stderr, "no /vmunix namelist\n");
+		fprintf(stderr, "no /unix namelist\n");
 		exit(1);
 	}
 	mf = open("/dev/kmem", 0);

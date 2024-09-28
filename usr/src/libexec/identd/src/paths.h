@@ -1,7 +1,7 @@
 /*
 ** paths.h		Common path definitions for the in.identd daemon
 **
-** Last update: 11 Dec 1992
+** Last update: 20 Sep 2024
 **
 ** Please send bug fixes/bug reports to: Peter Eriksson <pen@lysator.liu.se>
 */
@@ -10,7 +10,7 @@
 #  define _PATH_UNIX "/dynix"
 #endif
 
-#if defined(MIPS) || defined(IRIX) || defined(sco) || defined(_SEQUENT_)
+#if defined(MIPS) || defined(IRIX) || defined(sco) || defined(_SEQUENT_) || defined(pdp11)
 #  define _PATH_UNIX "/unix"
 #endif
 

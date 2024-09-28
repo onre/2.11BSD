@@ -1,5 +1,5 @@
 #if     !defined(lint) && defined(DOSCCS)
-static char *sccsid = "@(#)bad144.c 1.2 (2.11BSD) 2022/1/21";
+static char *sccsid = "@(#)bad144.c 1.3 (2.11BSD) 2024/9/20";
 #endif
 /*
  * bad144
@@ -24,6 +24,14 @@ static char *sccsid = "@(#)bad144.c 1.2 (2.11BSD) 2022/1/21";
  * RP07 entry added August 10, 1993 (thanks to Johnny Billquist) - SMS
  *
  * lseek() replaced tell() - Jan 21, 1994 - SMS
+ *
+ * When disklabels were introducted the partition spanning the entire disk
+ * should have been changed from 'h' to 'c' - Sep 20, 2024 - SMS
+ *
+ * disktab(5) has been cleaned up and some measure of sanity imposed.  The 
+ * entries in disktab(5) for drives supported by bad144 have been changed 
+ * to use 'c' to span the entire drive and the 'h' partiton as an unused 
+ * partition that spans the drive excluding the last cylinder.
  */
 #include <sys/param.h>
 #ifndef BADSECT
@@ -89,7 +97,7 @@ main(argc, argv)
 	fprintf(stderr, "\n");
 	exit(1);
 found:
-	sprintf(name, "/dev/r%sh", argv[1]);
+	sprintf(name, "/dev/r%sc", argv[1]);
 	argc -= 2;
 	argv += 2;
 	if (argc == 0) {

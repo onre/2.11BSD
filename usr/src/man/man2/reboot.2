@@ -2,9 +2,9 @@
 .\" All rights reserved.  The Berkeley software License Agreement
 .\" specifies the terms and conditions for redistribution.
 .\"
-.\"	@(#)reboot.2	6.1 (Berkeley) 5/9/85
+.\"	@(#)reboot.2	6.2 (2.11BSD) 2024/9/20
 .\"
-.TH REBOOT 2 "May 9, 1985"
+.TH REBOOT 2 "Sep 20, 2024"
 .UC 4
 .SH NAME
 reboot \- reboot system or halt processor
@@ -26,7 +26,7 @@ to be passed to the reboot program; the other flags
 are used in scripts stored on the console storage media, or used
 in manual bootstrap procedures.
 When none of these options (e.g. RB_AUTOBOOT) is given, the system is rebooted
-from file \*(lqvmunix\*(rq in the root file system of unit 0
+from file \*(lqunix\*(rq in the root file system of unit 0
 of a disk chosen in a processor specific way.
 An automatic consistency check of the disks is then normally performed.
 .PP
@@ -41,7 +41,7 @@ RB_HALT should be used with caution.
 RB_ASKNAME
 Interpreted by the bootstrap program itself, causing it to
 inquire as to what file should be booted.  Normally, the system is
-booted from the file \*(lqxx(0,0)vmunix\*(rq without asking.
+booted from the file \*(lqxx(0,0)unix\*(rq without asking.
 .TP
 RB_SINGLE
 Normally, the reboot procedure involves an automatic disk consistency
@@ -66,6 +66,3 @@ is returned and an error is returned in the global variable
 The caller is not the super-user.
 .SH "SEE ALSO"
 crash(8), halt(8), init(8), reboot(8)
-.SH BUGS
-The notion of ``console medium'', among other things,
-is specific to the VAX.

@@ -2,9 +2,9 @@
 .\" All rights reserved.  The Berkeley software License Agreement
 .\" specifies the terms and conditions for redistribution.
 .\"
-.\"	@(#)cc.1	6.2 (Berkeley) 6/7/85
+.\"	@(#)cc.1	6.3 (2.11BSD) 2024/9/18
 .\"
-.TH CC 1 "June 7, 1985"
+.TH CC 1 "September 18, 2024"
 .UC 2
 .SH NAME
 cc \- C compiler (2BSD)
@@ -136,6 +136,7 @@ If
 .I string 
 is empty, use a standard backup version.
 .TP
+.SM
 .BR \-t [ p012 ]
 Find only the designated compiler passes in the
 files whose names are constructed by a
@@ -146,6 +147,11 @@ In the absence of a
 option, the
 .I string
 is taken to be `/usr/c/'.
+.TP
+.SM
+.BR \-d
+Debug; print what programs the compiler is calling,
+with their arguments.
 .PP
 Other arguments
 are taken

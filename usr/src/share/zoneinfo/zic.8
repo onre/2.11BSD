@@ -1,3 +1,4 @@
+.. @(#)zic.8	3.3 2024/9/19
 .TH ZIC 8
 .SH NAME
 zic \- time zone compiler
@@ -28,7 +29,7 @@ These options are available:
 .TP
 .BI "\-d " directory
 Create time conversion information files in the named directory rather than
-in the standard directory named below.
+in the default directory named below.
 .TP
 .BI "\-l " timezone
 Use the given time zone as local time.
@@ -288,7 +289,6 @@ you may need to use local standard time in the
 field of the earliest transition time's rule to ensure that
 the earliest transition time recorded in the compiled file is correct.
 .SH FILES
-/usr/share/zoneinfo	standard directory used for created files
+/usr/share/zoneinfo default directory used for created files
 .SH "SEE ALSO"
 newctime(3), tzfile(5), zdump(8)
-.. @(#)zic.8	3.2

@@ -3,7 +3,7 @@
  * All rights reserved.  The Berkeley software License Agreement
  * specifies the terms and conditions for redistribution.
  *
- *	@(#)si.c	1.5 (2.11BSD GTE) 1995/04/13
+ *	@(#)si.c	1.6 (2.11BSD) 2024/9/26
  */
 
 /*
@@ -30,12 +30,6 @@
 #define	SI_NSECT	32
 #define	SI_NTRAC	19
 
-#if NXPD > 0
-extern struct size {
-	daddr_t	nblocks;
-	int	cyloff;
-} rm5_sizes[8];
-#else !NXPD
 /*
  * We reserve room for bad block forwarding information even though this
  * driver doesn't support bad block forwarding.  This allows us to simply
@@ -54,7 +48,6 @@ struct size {
 	165826,	550,	/* g: cyl 550 - 822, reserve 1 track + 126 */
 	500384,	  0,	/* h: cyl   0 - 822 */
 };
-#endif NXPD
 
 struct	sidevice *SIADDR;
 

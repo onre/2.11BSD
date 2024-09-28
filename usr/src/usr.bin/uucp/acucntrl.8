@@ -1,6 +1,6 @@
-.\"	@(#)acucntrl.8	6.2.1 (2.11BSD) 1996/11/27
+.\"	@(#)acucntrl.8	6.3 (2.11BSD) 2024/9/20
 .\"
-.TH acucntrl 8 "November 27, 1996"
+.TH acucntrl 8 "Sep 20, 2024"
 .UC 6
 .SH NAME
 acucntrl \- turn around tty line between dialin and dialout
@@ -107,7 +107,7 @@ Worked over many times by W.Sebok
 .RI ( i . e .
 hacked to death)
 .SH FILES
-/dev/kmem, /vmunix, /etc/ttys, /var/run/utmp, /dev/tty*
+/dev/kmem, /unix, /etc/ttys, /var/run/utmp, /dev/tty*
 .SH BUGS
 .PP
 Sensing carrier requires the 4.2 BSD TIOCMGET ioctl call.  Unfortunately this

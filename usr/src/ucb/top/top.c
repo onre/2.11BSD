@@ -24,6 +24,7 @@
  *               Changed header layout.
  *               Added %cpu time to header.
  * 07 26/8/2022  Truncate hostname by first period or 7 char.     bqt
+ * 08 20/9/2024  Change /vmunix to /unix                          sms
  */
 /*
  * Using RAW removes the need for signal processing, but adds a requirement
@@ -1033,10 +1034,10 @@ do_top()
 	int			nread;
 	int			npr;
 
-	nlist("/vmunix", nl);
+	nlist("/unix", nl);
 	if(nl[0].n_type == 0)
 	{
-		fprintf(stderr, "no /vmunix namelist\n");
+		fprintf(stderr, "no /unix namelist\n");
 		return(1);
 	}
 

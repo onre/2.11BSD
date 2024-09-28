@@ -2,9 +2,9 @@
 .\" All rights reserved.  The Berkeley software License Agreement
 .\" specifies the terms and conditions for redistribution.
 .\"
-.\"	@(#)vmstat.1	6.3 (Berkeley) 3/15/86
+.\"	@(#)vmstat.1	6.4 (2.11BSD) 2024/9/20
 .\"
-.TH VMSTAT 1 "December 30, 2006"
+.TH VMSTAT 1 "Sep 20, 2024"
 .UC 4
 .de s1
 .if n .sp
@@ -151,10 +151,7 @@ in favor of the Massbus drives).  To force
 to display specific drives, their names may be supplied on
 the command line.
 .SH FILES
-/dev/kmem, /vmunix
+/dev/kmem, /unix
 .SH SEE ALSO
 .IR systat (1),
 .IR iostat (1)
-.PP
-The sections starting with ``Interpreting system activity'' in
-.IR "Installing and Operating 4.2bsd" .
