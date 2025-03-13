@@ -30,7 +30,7 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
  *
- *	@(#)unistd.h	8.11 (2.11BSD) 2022/1/21
+ *	@(#)unistd.h	8.12 (2.11BSD) 2025/2/22
  */
 
 #ifndef _UNISTD_H_
@@ -50,7 +50,7 @@
 /* for lseek() */
 #define	SEEK_SET	0
 #define	SEEK_CUR	1
-#define	SEEK_SET	2
+#define	SEEK_END	2
 
 /* for access() */
 #define F_OK	0	/* test for presence of file */

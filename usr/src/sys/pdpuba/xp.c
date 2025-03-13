@@ -3,7 +3,7 @@
  * All rights reserved.  The Berkeley software License Agreement
  * specifies the terms and conditions for redistribution.
  *
- *	@(#)xp.c	2.6 (2.11BSD GTE) 1998/4/3
+ *	@(#)xp.c	2.7 (2.11BSD) 2024/9/29
  */
 
 /*
@@ -475,15 +475,18 @@ xpustart(unit)
 #endif
 
 /*
- * XXX - The 'h' partition is used below to access the bad block area.  This
+ * XXX - The 'c' partition is used below to access the bad block area.  This
  * XXX - will almost certainly be wrong if the user has defined another 
- * XXX - partition to span the entire drive including the bad block area.  It
- * XXX - is not known what to do about this.
+ * XXX - partition to span the entire drive including the bad block area.
+ * XXX - It is not known what to do about this.
+ * XXX -
+ * XXX - As of 2024/9/28 the xp entries in disktab(5) were updated to use the
+ * XXX - 'c' partition to span the entire drive.  bad144(8) was also changed.
 */
 #ifdef BADSECT
 		bbp = &bxpbuf[unit];
 		bbp->b_flags = B_READ | B_BUSY | B_PHYS;
-		bbp->b_dev = bp->b_dev | 7;	/* "h" partition whole disk */
+		bbp->b_dev = bp->b_dev | ('c' - 'a');
 		bbp->b_bcount = sizeof(struct dkbad);
 		bbp->b_un.b_addr = (caddr_t)&xpbad[unit];
 		bbp->b_blkno = (daddr_t)xd->xp_ncyl * xd->xp_nspc - xd->xp_nsect;

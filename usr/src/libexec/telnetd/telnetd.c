@@ -9,7 +9,7 @@ char copyright[] =
 "@(#) Copyright (c) 1983 Regents of the University of California.\n\
  All rights reserved.\n";
 
-static char sccsid[] = "@(#)telnetd.c	5.20.3 (2.11BSD) 1996/11/16";
+static char sccsid[] = "@(#)telnetd.c	5.21 (2.11BSD) 2025/3/5";
 #endif
 
 /*
@@ -300,6 +300,9 @@ gotpty:
 		fatalperror(f, line);
 
 	gethostname(hostname, sizeof (hostname));
+
+	b.sg_ispeed = EXTB;
+	b.sg_ospeed = EXTB;
 
 	gettable("default", defent, defstrs);
 	gendefaults();

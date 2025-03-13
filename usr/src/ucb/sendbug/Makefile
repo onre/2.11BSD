@@ -3,13 +3,13 @@
 # All rights reserved.  The Berkeley software License Agreement
 # specifies the terms and conditions for redistribution.
 #
-#	@(#)Makefile	5.7.1 (GTE) 1996/10/23
+#	@(#)Makefile	5.8 (2.11BSD) 2025/3/7
 #
 # Bug report processor and associated programs
 #
 
-BUGS_NAME = sms
-BUGS_HOME = @MOE.2BSD.COM
+BUGS_NAME = bugs
+BUGS_HOME = @2BSD.COM
 DEFS = -DBUGS_NAME='"$(BUGS_NAME)"' -DBUGS_HOME='"$(BUGS_HOME)"'
 CFLAGS = -O -DUNIXCOMP $(DEFS)
 DESTDIR=

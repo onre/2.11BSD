@@ -4,15 +4,15 @@
 # All rights reserved.  The Berkeley software License Agreement
 # specifies the terms and conditions for redistribution.
 #
-#	@(#)sendbug.sh	6.2 (2.11BSD) 2020/2/27
+#	@(#)sendbug.sh	6.3 (2.11BSD) 2025/3/7
 #
-# Create a bug report and mail to the 2bsd maintainer.
+# Create a bug report and mail to bugs@2bsd.com
 #
 
 TEMP=/tmp/bug$$
 FORMAT=/usr/share/misc/bugformat
 
-: ${BUGADDR=sms@2BSD.COM}
+: ${BUGADDR=bugs@2BSD.COM}
 : ${EDITOR=/usr/ucb/vi}
 
 trap '/bin/rm -f $TEMP ; exit 1' 1 2 3 13 15

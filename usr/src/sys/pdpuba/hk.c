@@ -3,7 +3,7 @@
  * All rights reserved.  The Berkeley software License Agreement
  * specifies the terms and conditions for redistribution.
  *
- *	@(#)hk.c	2.5 (2.11BSD) 2020/1/7
+ *	@(#)hk.c	2.6 (2.11BSD) 2024/9/29
  */
 
 /*
@@ -406,10 +406,7 @@ hkustart(unit)
 		disk->dk_flags |= DKF_ONLINE;
 /*
  * XXX - The 'c' partition is used below to access the bad block area.  This
- * XXX - is DIFFERENT than the XP driver (which should have used 'c' but could
- * XXX - not due to historical reasons).  The 'c' partition MUST span the entire
- * XXX - disk including the bad sector track.  The 'h' partition should be 
- * XXX - used for user data.
+ * XXX - partition MUST span the entire disk including the bad sector track.
 */
 #ifdef BADSECT
 		bbp->b_flags = B_READ|B_BUSY|B_PHYS;
