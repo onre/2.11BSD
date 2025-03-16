@@ -1886,7 +1886,7 @@ dl|vt300|vt320|vt340|dec vt300 series with jump scroll:\
 	:rs=\E>\E[?3l\E[?4l\E[?5l\E[?7h\E[?8h:\
 	:tc=vt100:
 # @(#)termcap	X10/6.6	11/7/86, minus alternate screen, plus :cs
-vs|xterm|vs100|xterm terminal emulator (X window system):\
+vs|xterm|vs100|xterm-color|xterm-256color|xterm terminal emulator (X window system):\
 	:do=^J:le=^H:ho=\E[H:\
 	:co#80:li#65:cl=\E[H\E[2J:bs:am:cm=\E[%i%d;%dH:nd=\E[C:up=\E[A:\
 	:ce=\E[K:cd=\E[J:so=\E[7m:se=\E[m:us=\E[4m:ue=\E[m:\

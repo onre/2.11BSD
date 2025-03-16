@@ -55,6 +55,8 @@ of characters, to
 .IR ahead ,
 and to receive
 .I terminal type information
+and
+.I negotiate about window size
 from the remote client.
 If the remote client is willing, the remote terminal type is
 propagated in the environment of the created login process.
@@ -79,6 +81,8 @@ is willing to have the remote client
 .IR binary ,
 .I terminal
 .IR type ,
+.I negotiate about window
+.IR size ,
 and
 .I suppress go
 .IR ahead .
@@ -88,14 +92,6 @@ telnet(1C)
 Some
 .B TELNET
 commands are only partially implemented.
-.PP
-The
-.B TELNET
-protocol allows for
-the exchange of the number of lines and columns on the user's terminal,
-but
-.I telnetd
-doesn't make use of them.
 .PP
 Because of bugs in the original 4.2 BSD
 .IR telnet (1C),

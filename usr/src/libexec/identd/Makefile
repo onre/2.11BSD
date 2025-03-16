@@ -60,10 +60,10 @@ identconn: identconn.sh
 	sed -e 's,xDESTROOTx,$(DESTROOT),g' $? > $@
 
 install: identd identd.0 idecrypt.0 identconn itest idecrypt
-	install -m 644 identd.0 $(MANDIR)/identd.0
+	install -c -o bin -g bin -m 444 identd.0 $(MANDIR)/identd.0
 	install -m 755 identd $(EXECDIR)/identd
 	install -m 755 identconn $(BINDIR)/identconn
-	install -m 644 idecrypt.0  $(MANDIR)/idecrypt.0
+	install -c -o bin -g bin -m 444 idecrypt.0  $(MANDIR)/idecrypt.0
 	install -m 755 idecrypt $(BINDIR)/idecrypt
 	install -o root -g kmem -m 2555 itest ${BINDIR}/itest
 

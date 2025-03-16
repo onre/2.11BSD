@@ -62,7 +62,7 @@ clean:
 
 install: ${TARGET} ${CATPAGE}
 	install -c -m 700 -o root -g staff ${TARGET} ${INSTALLDIR}
-	install -c -m 444 -o root -g staff ${CATPAGE} ${MANDIR}
+	install -c -o bin -g bin -m 444 ${CATPAGE} ${MANDIR}
 
 ${CATPAGE}:	${MANPAGE}
 	nroff -h -man ${MANPAGE} > ${CATPAGE}

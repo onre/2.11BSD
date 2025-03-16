@@ -23,7 +23,7 @@ sysgen: sysgen.o devices.h
 
 install: sysgen sysgen.0
 	install -c -s ${PROG} ${DESTDIR}/usr/sbin/${PROG}
-	install -m 444 ${MAN} ${DESTDIR}/usr/man/cat8/${MAN}
+	install -c -o bin -g bin -m 444 ${MAN} ${DESTDIR}/usr/man/cat8/${MAN}
 
 clean:
 	rm -f ${OBJS} ${MAN} ${PROG} tags 

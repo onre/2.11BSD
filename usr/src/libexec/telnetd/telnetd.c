@@ -61,6 +61,9 @@ struct	ltchars ltc = {
 	CSUSP, CDSUSP, CRPRNT,
 	CFLUSH, CWERASE, CLNEXT
 };
+struct winsize ws;
+int chwinsize = 0;
+
 char	hostname[32];
 
 #define	TABBUFSIZ	512
@@ -93,6 +96,7 @@ char	subbuffer[100], *subpointer= subbuffer, *subend= subbuffer;
 			}
 #define	SB_GET()	((*subpointer++)&0xff)
 #define	SB_EOF()	(subpointer >= subend)
+#define	SB_LEN()	(subend - subpointer)
 
 int	pcc, ncc, pty, net, inter;
 int	SYNCHing = 0;		/* we are in TELNET SYNCH mode */
@@ -653,7 +657,7 @@ telrcv()
 
 	while (ncc > 0) {
 		if ((&ptyobuf[BUFSIZ] - pfrontp) < 2)
-			return;
+			break;
 		c = *netip++ & 0377, ncc--;
 		switch (state) {
 
@@ -807,6 +811,7 @@ telrcv()
 			} else {
 				SB_TERM();
 				suboption();	/* handle sub-option */
+				SB_CLEAR(); /* need to reset subpointer */
 				state = TS_DATA;
 			}
 			break;
@@ -842,6 +847,10 @@ telrcv()
 			exit(1);
 		}
 	}
+	if (chwinsize) { /* Window size changed? */
+		ioctl(pty, TIOCSWINSZ, &ws);
+		chwinsize = 0;
+	}
 }
 
 willoption(option)
@@ -875,6 +884,10 @@ willoption(option)
 		    hisopts[TELOPT_TTYPE] = OPT_YES;
 		    return;
 		}
+		fmt = doopt;
+		break;
+
+	case TELOPT_NAWS:
 		fmt = doopt;
 		break;
 
@@ -1027,6 +1040,15 @@ suboption()
 	terminaltype = terminalname;
 	break;
     }
+    case TELOPT_NAWS:
+	if (SB_LEN() < 4)
+		return;
+	ws.ws_col = SB_GET() << 8;
+	ws.ws_col |= SB_GET();
+	ws.ws_row = SB_GET() << 8;
+	ws.ws_row |= SB_GET();
+	chwinsize = 1;	/* Defer setting size so we can coalesce if possible */
+	break;
 
     default:
 	;

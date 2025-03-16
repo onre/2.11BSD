@@ -20,6 +20,8 @@ if [ ! -d $MDIR ]; then
 fi
 
 nroff -man $PAGE >$DEST
+chown bin $DEST
+chgrp bin $DEST
 chmod 444 $DEST
 set +x
 

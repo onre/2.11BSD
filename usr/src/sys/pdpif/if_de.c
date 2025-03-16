@@ -3,6 +3,10 @@
  *	2.11BSD - Remove dereset since 1) it was never called, and 2)
  *		  wouldn't work if it were called. Also uballoc and
  *		  ubmalloc calling convention changed. - sms
+ *
+ * if_de.c	1.2	(2.11BSD)	12-Mar-2025
+ *	Add printout of type of controller and MAC address for
+ *	Unibus ethernet similarly to what Qbus drivers were doing.
  */
 #include "de.h"
 #if NDE > 0
@@ -182,11 +186,6 @@ struct	uba_device *ui;
 	csr1 = addr->pcsr1;
 	ds->ds_devid = (csr1 & PCSR1_DEVID) >> 4;
 
-#ifdef DE_DEBUG
-	if (dedebug >= 1)
-		printf("de%d: Device Type: %s\n", ui->ui_unit,
-			(ds->ds_devid == DEUNA) ? "DEUNA" : "DELUA");
-#endif		/* DE_DEBUG */
 	/*
 	 * Board Status Check
 	 */
@@ -236,17 +235,15 @@ struct	uba_device *ui;
 
 	bcopy((caddr_t)&ds->ds_pcbb.pcbb2,(caddr_t)ds->ds_addr,
 	    sizeof (ds->ds_addr));
-#ifdef	DE_DEBUG
-	if (dedebug >= 1)
-		printf("de%d: hardware address %s\n",
-			ui->ui_unit, ether_sprintf(ds->ds_addr));
-#endif		/* DE_DEBUG */
 	ifp->if_init = deinit;
 	ifp->if_output = deoutput;
 	ifp->if_ioctl = deioctl;
 	ifp->if_reset = 0;
 	ds->ds_deuba.difu_flags = UBA_CANTWAIT;
 
+	printf("de%d: DE%sA addr %s\n", ui->ui_unit,
+		ds->ds_devid == DEUNA ? "UN" : "LU",
+		ether_sprintf(ds->ds_addr));
 	if_attach(ifp);
 }
 

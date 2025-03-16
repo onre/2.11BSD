@@ -9,13 +9,15 @@ char copyright[] =
 "@(#) Copyright (c) 1980 Regents of the University of California.\n\
  All rights reserved.\n";
 
-static char sccsid[] = "@(#)main.c	5.5.2 (2.11BSD) 2003/2/10";
+static char sccsid[] = "@(#)main.c	5.5.3 (2.11BSD) 2025/3/10";
 #endif
 
 /*
  * getty -- adapt to terminal speed on dialup, and call login
  *
  * Melbourne getty, June 83, kre.
+ *
+ * Bugfix to set local mode word, Mar 2025, bqt.
  */
 
 #include <sgtty.h>
@@ -179,8 +181,11 @@ main(argc, argv)
 			tmode.sg_ospeed = speed(OS);
 		else if (SP)
 			tmode.sg_ospeed = speed(SP);
-		tmode.sg_flags = setflags(0);
+		allflags = setflags(0);
+		tmode.sg_flags = allflags & 0xffff;
+		someflags = allflags >> 16;
 		ioctl(0, TIOCSETP, &tmode);
+		ioctl(0, TIOCLSET, &someflags);
 		setchars();
 		ioctl(0, TIOCSETC, &tc);
 		ioctl(0, TIOCSETD, &ldisp);
@@ -246,6 +251,8 @@ getname()
 	register char *np;
 	register c;
 	char cs;
+	long allflags;
+	int someflags;
 
 	/*
 	 * Interrupt may happen if we use CBREAK mode
@@ -255,9 +262,14 @@ getname()
 		return (0);
 	}
 	signal(SIGINT, interrupt);
-	tmode.sg_flags = setflags(0);
+	allflags = setflags(0);
+	tmode.sg_flags = allflags & 0xffff;
+	someflags = allflags >> 16;
 	ioctl(0, TIOCSETP, &tmode);
-	tmode.sg_flags = setflags(1);
+	ioctl(0, TIOCLSET, &someflags);
+	allflags = setflags(1);
+	tmode.sg_flags = allflags & 0xffff;
+	someflags = allflags >> 16;
 	prompt();
 	if (PF > 0) {
 		oflush();
@@ -265,6 +277,7 @@ getname()
 		PF = 0;
 	}
 	ioctl(0, TIOCSETP, &tmode);
+	ioctl(0, TIOCLSET, &someflags);
 	crmod = 0;
 	upper = 0;
 	lower = 0;

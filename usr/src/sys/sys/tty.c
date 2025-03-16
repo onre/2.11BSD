@@ -3,7 +3,7 @@
  * All rights reserved.  The Berkeley software License Agreement
  * specifies the terms and conditions for redistribution.
  *
- *	@(#)tty.c	1.6 (2.11BSD) 2020/1/7
+ *	@(#)tty.c	1.7 (2.11BSD) 2025/3/12
  */
 
 #include "param.h"
@@ -827,34 +827,6 @@ ttyinput(c, tp)
 	}
 
 	/*
-	 * Ignore any high bit added during
-	 * previous ttyinput processing.
-	 */
-	if ((tp->t_state&TS_TYPEN) == 0 && (t_flags&PASS8) == 0)
-		c &= 0177;
-
-	/*
-	 * Check for literal nexting very first.  This is the _ONLY_ place
-	 * left which ORs in 0200.  Handling literal nexting this way is
-	 * what keeps the tty subsystem from being 8 bit clean.  The fix is
-	 * horrendous though and is put off for now.  And to think that ALL
-	 * of this is made necessary by ttyrubout() - it's the only place that
-	 * actually _checks_ the 0200 bit and only for newline and tab chars
-	 * at that!
-	 *
-	 * If we had 9 bit bytes life would be a lot simpler ;)
-	 *
-	 * The basic idea is to flag the character as "special" and also
-	 * modify it so that the character does not match any of the special
-	 * editing or control characters.  We could just as simply jump directly
-	 * to the test for 'cbreak' below.
-	 */
-	if (tp->t_state&TS_LNCH) {
-		c |= 0200;
-		tp->t_state &= ~TS_LNCH;
-	}
-
-	/*
 	 * Scan for special characters.  This code
 	 * is really just a big case statement with
 	 * non-constant cases.  The bottom of the
@@ -1062,15 +1034,8 @@ ttyoutput(c, tp)
 		return(-1);
 	}
 
-	c &= 0177;
-#ifdef	whybother
-	/*
-	 * Ignore EOT in normal mode to avoid
-	 * hanging up certain terminals.
-	 */
-	if (c == CEOT && (tp->t_flags&CBREAK) == 0)
-		return(-1);
-#endif
+	if ((tp->t_flags & PASS8) == 0) c &= 0177;
+
 	/*
 	 * Turn tabs to spaces as required
 	 */
@@ -1107,7 +1072,7 @@ ttyoutput(c, tp)
 		return (c);
 
 	col = tp->t_col;
-	switch (partab[c]&077) {
+	switch (partab[c&0177]&077) {
 
 	case ORDINARY:
 		col++;
@@ -1497,13 +1462,8 @@ ttyrub(c, tp)
 			ttyretype(tp);
 			return;
 		}
-/*
- * Out of the ENTIRE tty subsystem would believe this is the ONLY place
- * that the "9th" bit (quoted chars) is tested?
-*/
-		if (c == ('\t'|0200) || c == ('\n'|0200))
-			ttyrubo(tp, 2);
-		else switch (partab[c&=0177]&0177) {
+
+		switch (partab[c&0177]&0177) {
 
 		case ORDINARY:
 			ttyrubo(tp, 1);
@@ -1643,7 +1603,7 @@ ttyecho(c, tp)
 	}
 	if (c == '\r' && tp->t_flags&CRMOD)
 		c = '\n';
-	c7 = c & 0177;
+	c7 = (tp->t_flags & PASS8) == 0 ? c & 0177 : c;
 	if (tp->t_flags&CTLECH) {
 		if (c7 <= 037 && c != '\t' && c != '\n' || c7 == 0177) {
 			(void) ttyoutput('^', tp);

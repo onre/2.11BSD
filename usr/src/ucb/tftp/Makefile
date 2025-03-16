@@ -23,4 +23,4 @@ clean:
 
 install:  tftp tftp.0
 	install -s tftp ${DESTDIR}/usr/ucb
-	install -c -m 444 tftp.0 ${DESTDIR}/usr/man/cat1
+	install -c -o bin -g bin -m 444 tftp.0 ${DESTDIR}/usr/man/cat1

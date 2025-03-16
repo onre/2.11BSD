@@ -14,7 +14,7 @@ install:
 	ranlib /usr/lib/libvmf.a
 	install -c -m 644 genlib_p /usr/lib/libvmf_p.a
 	ranlib /usr/lib/libvmf_p.a
-	install -c -m 444 vmf.0 /usr/man/cat3/vmf.0
+	install -c -o bin -g bin -m 444 vmf.0 /usr/man/cat3/vmf.0
 
 clean:
 	rm -f ${OBJECTS} profiled/${OBJECTS} genlib genlib_p vmf.0

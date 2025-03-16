@@ -3,7 +3,7 @@
  * All rights reserved.  The Berkeley software License Agreement
  * specifies the terms and conditions for redistribution.
  *
- *	@(#)ex_tune.h	7.8.3 (2.11BSD) 2020/1/20
+ *	@(#)ex_tune.h	7.9 (2.11BSD) 2025/3/13
  */
 
 /*
@@ -42,15 +42,9 @@
 #define	ESIZE		512
 #define CRSIZE		1024
 #else
-#ifdef u370
-#define LBSIZE		4096
-#define ESIZE		512
-#define CRSIZE		4096
-#else
 #define	LBSIZE		512		/* Line length */
 #define	ESIZE		128		/* Size of compiled re */
 #define CRSIZE		512
-#endif
 #endif
 #define	RHSSIZE		256		/* Size of rhs of substitute */
 #define	NBRA		9		/* Number of re \( \) pairs */
@@ -72,7 +66,7 @@
 					   also termlib and termcap */
 
 /*
- * Except on VMUNIX, these are a ridiculously small due to the
+ * Except on VMUNIX, these are small due to the
  * lousy arglist processing implementation which fixes core
  * proportional to them.  Argv (and hence NARGS) is really unnecessary,
  * and argument character space not needed except when
@@ -90,11 +84,14 @@
 #endif
 
 /*
- * Note: because the routine "alloca" is not portable, TUBESIZE
- * bytes are allocated on the stack each time you go into visual
- * and then never freed by the system.  Thus if you have no terminals
- * which are larger than 24 * 80 you may well want to make TUBESIZE
- * smaller.  TUBECOLS should stay at 160 since this defines the maximum
+ * Note: TUBESIZE bytes used to be allocated on the stack when entering 
+ * visual [vop()] AND open mode [oop()].  This was a problem for the pdp11 
+ * and could cause the program to crash because the stack could not grow 
+ * further downward.  Use of a static buffer in ex_v.c reduces greatly
+ * stack space at the cost of some data space. This worked for the u370 system,
+ * it can work for all systems now.
+ *
+ * TUBECOLS should stay at 160 since this defines the maximum
  * length of opening on hardcopies and allows two lines of open on
  * terminals like adm3's (glass tty's) where it switches to pseudo
  * hardcopy mode when a line gets longer than 80 characters.

@@ -47,7 +47,7 @@ clean:
 
 install: sail $(TARGET)/$(LOGFILE) sail.0
 	install -s -m 4755 -o $(SAILMASTER) sail $(TARGET)/sail
-	install -c -m 444 sail.0 ${DESTDIR}/usr/man/cat6/sail.0
+	install -c -o bin -g bin -m 444 sail.0 ${DESTDIR}/usr/man/cat6/sail.0
 
 logfile $(TARGET)/$(LOGFILE):
 	cp /dev/null $(TARGET)/$(LOGFILE)

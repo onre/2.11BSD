@@ -60,15 +60,10 @@ int	winch();
 /*
  * Enter open mode
  */
-#ifdef u370
-char	atube[TUBESIZE+LBSIZE];
-#endif
+static char	atube[TUBESIZE+LBSIZE];
 oop()
 {
 	register char *ic;
-#ifndef u370
-	char atube[TUBESIZE + LBSIZE];
-#endif
 	ttymode f;	/* mjm: was register */
 	int resize;
 
@@ -177,9 +172,6 @@ ovend(f)
 vop()
 {
 	register int c;
-#ifndef u370
-	char atube[TUBESIZE + LBSIZE];
-#endif
 	ttymode f;	/* mjm: was register */
 	int resize;
 

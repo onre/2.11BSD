@@ -48,7 +48,7 @@ install: all
 	install -c -m 644 libident_p.a $(LIBDIR)/libident_p.a
 	ranlib $(LIBDIR)/libident.a $(LIBDIR)/libident_p.a
 	install -c -m 444  ident.h $(INCDIR)/ident.h
-	install -c -m 444 ident.0 $(MANDIR)/ident.0
+	install -c -o bin -g bin -m 444 ident.0 $(MANDIR)/ident.0
 
 clean:
 	-rm -f libident.a libident_p.a ident-tester lookup-tester *.o ident.0
