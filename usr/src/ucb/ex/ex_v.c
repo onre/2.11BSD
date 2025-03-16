@@ -5,7 +5,7 @@
  */
 
 #if	!defined(lint) && defined(DOSCCS)
-static char *sccsid = "@(#)ex_v.c	7.8.1 (2.11BSD GTE) 12/9/94";
+static char *sccsid = "@(#)ex_v.c	7.8.2 (2.11BSD) 2025/3/14";
 #endif
 
 #include "ex.h"
@@ -174,6 +174,7 @@ vop()
 	register int c;
 	ttymode f;	/* mjm: was register */
 	int resize;
+	long oldmask;
 
 	if (!CA && UP == NOSTR) {
 		if (initev) {
@@ -223,8 +224,10 @@ toopen:
 	vmoving = 0;
 	f = ostart();
 	if (initev == 0) {
+		oldmask = sigblock(sigmask(SIGWINCH));
 		vcontext(dot, c);
 		vnline(NOSTR);
+		(void)sigsetmask(oldmask);
 	}
 	vmain();
 	Command = "visual";
