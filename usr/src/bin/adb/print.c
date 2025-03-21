@@ -213,10 +213,18 @@ printtrace(modif)
  			printf(") from ");
  			{
 				int	savmaxoff = maxoff;
+				int	save_symcnt;
+
+				/* we need to save symcnt variable as psymoff
+				** is going to change it and then the local
+				** symbol dump is going to be off by a frame */
+
+				save_symcnt = sympos();
 
  				maxoff = ((unsigned)-1)>>1;
  				psymoff((long)callpc,ISYM,"");
  				maxoff = savmaxoff;
+				symset(save_symcnt);
  			}
  			printc('\n');
 
@@ -240,11 +248,11 @@ printtrace(modif)
 
 	    /*print externals*/
 	    case 'e': case 'E':
-		symset();
+		symset(-1);
 		WHILE (symp=symget())
 		DO chkerr();
-		   IF (symp->type == N_EXT|N_DATA) || (symp->type== N_EXT|N_BSS)
-		   THEN printf("%s:%12t%o\n", no_cache_sym(symp),
+		   IF (symp->type == (N_EXT|N_DATA)) || (symp->type == (N_EXT|N_BSS))
+		   THEN printf("%s:%16t%o\n", no_cache_sym(symp),
 				get(leng(symp->value),DSP));
 		   FI
 		OD

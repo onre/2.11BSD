@@ -247,7 +247,7 @@ lookupsym(symstr)
 {
 	register struct SYMbol *symp, *sc;
 
-	symset();
+	symset(-1);
 	while	(symp = symget())
 		{
 	   	if	(overlay && (symp->type == ISYM))

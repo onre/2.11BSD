@@ -129,11 +129,16 @@ findsym(svalue,type)
 	}
 
 /* sequential search through table */
-symset()
+symset(int cnt)
 	{
 
-	symcnt = -1;
+	symcnt = cnt;
 	}
+
+int sympos()
+{
+	return symcnt;
+}
 
 struct SYMbol *
 symget()
@@ -230,7 +235,7 @@ symINI(ex)
 #endif
 	if	(globals_only)
 		printf("%s: could only do global symbols\n", myname);
-	symset();
+	symset(-1);
 	return(0);
 	}
 

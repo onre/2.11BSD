@@ -33,7 +33,8 @@ findroutine(cframe)
 	IF (inst=get(leng(callpc-4), ISP)) == 04737	/* jsr pc,*$... */
 	THEN	narg = 1;
 	ELIF (inst&~077)==04700			/* jsr pc,... */
-	THEN	narg=0; v=(inst!=04767);
+	THEN	narg=(get(cframe, DSP) ? 0 : 2); /* top fp? main(argc, argv)? */
+		v=(inst!=04767);
 	ELIF (back2&~077)==04700
 	THEN	narg=0; v=TRUE;
 	ELSE	errflg=NOCFN;
