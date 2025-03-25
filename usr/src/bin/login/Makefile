@@ -19,13 +19,16 @@
 
 CFLAGS=	-O -i
 SRCS=	login.c
-OBJS=	login.o
+OBJS=	login.o gettytab.o subr.o init.o
 MAN=
+VPATH=	../../libexec/getty
 
 all: login
 
 login: ${OBJS}
 	${CC} -o $@ ${CFLAGS} ${OBJS} -lutil
+
+${OBJS}: ../../libexec/getty/gettytab.h
 
 clean:
 	rm -f ${OBJS} core login

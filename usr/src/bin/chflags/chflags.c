@@ -1,12 +1,11 @@
 /*
- *	Program Name:   symcompact.c
- *	Date: December 3, 1994
- *	Author: S.M. Schultz
- *
- *	-----------------   Modification History   ---------------
- *      Version Date            Reason For Modification
- *      1.0     03Dec94         1. Initial release into the public domain.
+ * 1994/12/01 Initial Release.
+ * 2025/03/17 Fix incorrect filename, add customary sccsid string.
 */
+
+#if	!defined(LINT) && defined(DOSCCS)
+static char sccsid[] = "@(#)chflags.c 1.1 (2.11BSD) 2025/3/17";
+#endif
 
 #include <stdio.h>
 #include <varargs.h>

@@ -14,7 +14,7 @@
  * IMPLIED WARRANTIES, INCLUDING, WITHOUT LIMITATION, THE IMPLIED
  * WARRANTIES OF MERCHANTIBILITY AND FITNESS FOR A PARTICULAR PURPOSE.
  *
- *	@(#)ftp_var.h	5.5.1 (2.11BSD GTE) 1/1/94
+ *	@(#)ftp_var.h	5.5.2 (2.11BSD) 2025/3/21
  */
 
 /*
@@ -33,6 +33,7 @@ int	fromatty;		/* input is from a terminal */
 int	interactive;		/* interactively prompt on m* cmds */
 int	debug;			/* debugging level */
 int	bell;			/* ring bell on cmd completion */
+int	passive;		/* passive mode */
 int	doglob;			/* glob local file names */
 int	autologin;		/* establish user account on connection */
 int	proxy;			/* proxy server connection active */

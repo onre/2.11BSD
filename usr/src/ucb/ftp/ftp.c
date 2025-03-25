@@ -16,7 +16,7 @@
  */
 
 #if	!defined(lint) && defined(DOSCCS)
-static char sccsid[] = "@(#)ftp.c	5.28.2 (2.11BSD) 2002/8/18";
+static char sccsid[] = "@(#)ftp.c	5.29 (2.11BSD) 2025/3/21";
 #endif
 
 #include <sys/param.h>
@@ -39,6 +39,7 @@ static char sccsid[] = "@(#)ftp.c	5.28.2 (2.11BSD) 2002/8/18";
 #include <pwd.h>
 #include <unistd.h>
 #include <varargs.h>
+#include <string.h>
 
 #include "ftp_var.h"
 
@@ -1092,6 +1093,10 @@ abort:
  * Need to start a listen on the data channel
  * before we send the command, otherwise the
  * server's connect may fail.
+ *
+ * Alternatively, if we're in passive mode, we need to request
+ * the remote side to give us a port to connect to, and get it
+ * set up.
  */
 int sendport = -1;
 
@@ -1131,6 +1136,46 @@ noport:
 		perror("ftp: getsockname");
 		goto bad;
 	}
+	if (passive) {
+		char *p;
+		unsigned int port;
+		union {
+			unsigned long ad;
+			char adb[4];
+		} a;
+		int a1,a2,a3,a4,p1,p2;
+		struct sockaddr_in in;
+
+		result = command("PASV");
+		if (code != 227) {
+			printf("Unexpected response.\n");
+			goto bad;
+		}
+		p = strchr(reply_string, '(');
+		if (p == NULL) {
+			printf("Badly formatted response.\n");
+			goto bad;
+		}
+		++p;
+		if (sscanf(p, "%d,%d,%d,%d,%d,%d",
+			      &a1, &a2, &a3, &a4, &p1, &p2) != 6) {
+			printf("Bad response to passive command.\n");
+			goto bad;
+		}
+		a.adb[0] = a1;
+		a.adb[1] = a2;
+		a.adb[2] = a3;
+		a.adb[3] = a4;
+		port = p1*256+p2;
+		in.sin_family = AF_INET;
+		in.sin_addr.s_addr = a.ad;
+		in.sin_port = htons(port);
+		if (connect(data, &in, sizeof(in)) < 0) {
+			perror("Failed to connect.\n");
+			goto bad;
+		}
+		return 0;
+	}
 	if (listen(data, 1) < 0)
 		perror("ftp: listen");
 	if (sendport) {
@@ -1165,14 +1210,16 @@ dataconn(mode)
 	struct sockaddr_in from;
 	int s, fromlen = sizeof (from);
 
-	s = accept(data, (struct sockaddr *) &from, &fromlen);
-	if (s < 0) {
-		perror("ftp: accept");
-		(void) close(data), data = -1;
-		return (NULL);
+	if (!passive) {
+		s = accept(data, (struct sockaddr *) &from, &fromlen);
+		if (s < 0) {
+			perror("ftp: accept");
+			(void) close(data), data = -1;
+			return (NULL);
+		}
+		(void) close(data);
+		data = s;
 	}
-	(void) close(data);
-	data = s;
 	return (fdopen(data, mode));
 }
 

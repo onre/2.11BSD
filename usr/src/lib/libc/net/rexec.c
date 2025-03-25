@@ -5,8 +5,8 @@
  */
 
 #if defined(LIBC_SCCS) && !defined(lint)
-static char sccsid[] = "@(#)rexec.c	5.2.1 (2.11BSD) 1997/10/2";
-#endif LIBC_SCCS and not lint
+static char sccsid[] = "@(#)rexec.c	5.3 (2.11BSD) 2025/3/22";
+#endif
 
 #include <sys/types.h>
 #include <sys/socket.h>
@@ -81,7 +81,7 @@ retry:
 		(void) sprintf(num, "%u", port);
 		(void) write(s, num, strlen(num)+1);
 		{ int len = sizeof (from);
-		  s3 = accept(s2, &from, &len, 0);
+		  s3 = accept(s2, &from, &len);
 		  close(s2);
 		  if (s3 < 0) {
 			perror("accept");

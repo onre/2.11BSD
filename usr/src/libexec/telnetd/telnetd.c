@@ -36,7 +36,7 @@ static char sccsid[] = "@(#)telnetd.c	5.21 (2.11BSD) 2025/3/5";
 #include <ctype.h>
 #include <strings.h>
 
-#include "gettytab.h"
+#include "../getty/gettytab.h"
 
 #define	OPT_NO			0		/* won't do this option */
 #define	OPT_YES			1		/* will do this option */

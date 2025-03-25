@@ -20,7 +20,7 @@ char copyright[] =
 "@(#) Copyright (c) 1980, 1987, 1988 The Regents of the University of California.\n\
  All rights reserved.\n";
 
-static char sccsid[] = "@(#)login.c	5.41 (2.11BSD) 2023/4/13";
+static char sccsid[] = "@(#)login.c	5.42 (2.11BSD) 2025/3/21";
 #endif
 
 /*
@@ -51,6 +51,7 @@ static char sccsid[] = "@(#)login.c	5.41 (2.11BSD) 2023/4/13";
 #include <tzfile.h>
 #include <lastlog.h>
 #include "pathnames.h"
+#include "../../libexec/getty/gettytab.h"
 
 #ifdef	KERBEROS
 #include <kerberos/krb.h>
@@ -71,7 +72,18 @@ struct	passwd *pwd;
 int	failures;
 char	term[64], *hostname, *username, *tty;
 
+#define TABBUFSIZ	512
+
+char	defent[TABBUFSIZ];
+char	defstrs[TABBUFSIZ];
+char	tabent[TABBUFSIZ];
+char	tabstrs[TABBUFSIZ];
+
 struct	sgttyb sgttyb;
+
+struct  sgttyb tmode = {
+	0, 0, CERASE, CKILL, 0
+};
 struct	tchars tc = {
 	CINTR, CQUIT, CSTART, CSTOP, CEOT, CBRK
 };
@@ -101,6 +113,8 @@ main(argc, argv)
 	char *ctime(), *ttyname(), *stypeof(), *crypt(), *getpass();
 	time_t time();
 	off_t lseek();
+	long allflags;
+	int someflags;
 
 	(void)signal(SIGALRM, timedout);
 	(void)alarm((u_int)timeout);
@@ -154,14 +168,28 @@ main(argc, argv)
 	} else
 		ask = 1;
 
+	gettable("default", defent, defstrs);
+	gendefaults();
+	gettable("login", tabent, tabstrs);
+	setdefaults();
+
+	setchars();
+
 	ioctlval = 0;
 	(void)ioctl(0, TIOCLGET, &oldioctlval);
-	(void)ioctl(0, TIOCLSET, &ioctlval);
 	(void)ioctl(0, TIOCNXCL, 0);
 	(void)fcntl(0, F_SETFL, ioctlval);
 	(void)ioctl(0, TIOCGETP, &sgttyb);
 	sgttyb.sg_erase = CERASE;
 	sgttyb.sg_kill = CKILL;
+
+	allflags = setflags(2);
+	tmode.sg_flags = allflags & 0xffff;
+	if (NL) tmode.sg_flags |= CRMOD;
+	ioctl(0, TIOCSETP, &tmode);
+	someflags = allflags >> 16;
+	ioctl(0, TIOCLSET, &someflags);
+
 	(void)ioctl(0, TIOCSLTC, &ltc);
 	(void)ioctl(0, TIOCSETC, &tc);
 	(void)ioctl(0, TIOCSETP, &sgttyb);
@@ -181,10 +209,10 @@ main(argc, argv)
 
 	openlog("login", LOG_ODELAY, LOG_AUTH);
 
-	for (cnt = 0;; ask = 1) {
-		ioctlval = 0;
-		(void)ioctl(0, TIOCSETD, &ioctlval);
+	ioctlval = NTTYDISC;
+	(void)ioctl(0, TIOCSETD, &ioctlval);
 
+	for (cnt = 0;; ask = 1) {
 		if (ask) {
 			fflag = 0;
 			getloginname();
@@ -452,7 +480,7 @@ getloginname()
 	static char nbuf[UT_NAMESIZE + 1];
 
 	for (;;) {
-		(void)printf("login: ");
+		(void)printf(LM);
 		for (p = nbuf; (ch = getchar()) != '\n'; ) {
 			if (ch == EOF) {
 				badlogin(username);
@@ -578,23 +606,6 @@ stypeof(ttyid)
 	struct ttyent *t;
 
 	return(ttyid && (t = getttynam(ttyid)) ? t->ty_type : UNKNOWN);
-}
-
-getstr(buf, cnt, err)
-	char *buf, *err;
-	int cnt;
-{
-	char ch;
-
-	do {
-		if (read(0, &ch, sizeof(ch)) != sizeof(ch))
-			exit(1);
-		if (--cnt < 0) {
-			(void)fprintf(stderr, "%s too long\r\n", err);
-			sleepexit(1);
-		}
-		*buf++ = ch;
-	} while (ch);
 }
 
 sleepexit(eval)

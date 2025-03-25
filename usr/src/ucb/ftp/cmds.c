@@ -16,7 +16,7 @@
  */
 
 #if	!defined(lint) && defined(DOSCCS)
-static char sccsid[] = "@(#)cmds.c	5.18.2 (2.11BSD) 2022/10/31";
+static char sccsid[] = "@(#)cmds.c	5.18.3 (2.11BSD) 2025/03/21";
 #endif
 
 /*
@@ -812,6 +812,7 @@ status(argc, argv)
 		}
 		pswitch(0);
 	}
+	printf("Passive mode: %s\n", onoff(passive));
 	printf("Mode: %s; Type: %s; Form: %s; Structure: %s\n",
 		modename, typename, formname, structname);
 	printf("Verbose: %s; Bell: %s; Prompting: %s; Globbing: %s\n", 
@@ -853,6 +854,18 @@ setbell()
 	bell = !bell;
 	printf("Bell mode %s.\n", onoff(bell));
 	code = bell;
+}
+
+/*
+ * Set active or passive mode
+ */
+/*VARARGS*/
+setpassive()
+{
+
+	passive = !passive;
+	printf("Passive mode %s.\n", onoff(passive));
+	code = passive;
 }
 
 /*

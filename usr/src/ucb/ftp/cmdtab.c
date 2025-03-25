@@ -15,8 +15,8 @@
  * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE.
  */
 
-#if	!defined(lint) && !defined(pdp11)
-static char sccsid[] = "@(#)cmdtab.c	5.9.1 (2.11BSD GTE) 1/1/94";
+#if	!defined(lint) && defined(DOSCCS)
+static char sccsid[] = "@(#)cmdtab.c	5.9.2 (2.11BSD) 2025/3/21";
 #endif
 
 #include "ftp_var.h"
@@ -26,7 +26,7 @@ static char sccsid[] = "@(#)cmdtab.c	5.9.1 (2.11BSD GTE) 1/1/94";
  */
 int	setascii(), setbell(), setbinary(), setdebug(), setform();
 int	setglob(), sethash(), setmode(), setpeer(), setport();
-int	setprompt(), setstruct();
+int	setprompt(), setstruct(), setpassive();
 int	settenex(), settrace(), settype(), setverbose();
 int	disconnect(), restart(), reget(), syst();
 int	cd(), lcd(), delete(), mdelete(), user();
@@ -76,6 +76,7 @@ char	nlisthelp[] =	"nlist contents of remote directory";
 char	nmaphelp[] =	"set templates for default file name mapping";
 char	ntranshelp[] =	"set translation table for default file name mapping";
 char	porthelp[] =	"toggle use of PORT cmd for each data connection";
+char	passivehelp[] =	"toggle passive transfer mode";
 char	prompthelp[] =	"force interactive prompting on multiple commands";
 char	proxyhelp[] =	"issue command on alternate connection";
 char	pwdhelp[] =	"print working directory on remote machine";
@@ -147,6 +148,7 @@ struct cmd cmdtab[] = {
 	{ "nlist",	nlisthelp,	1,	1,	1,	ls },
 	{ "ntrans",	ntranshelp,	0,	0,	1,	setntrans },
 	{ "open",	connecthelp,	0,	0,	1,	setpeer },
+	{ "passive",	passivehelp,	0,	0,	0,	setpassive },
 	{ "prompt",	prompthelp,	0,	0,	0,	setprompt },
 	{ "proxy",	proxyhelp,	0,	0,	1,	doproxy },
 	{ "sendport",	porthelp,	0,	0,	0,	setport },

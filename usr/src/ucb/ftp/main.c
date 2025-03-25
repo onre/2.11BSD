@@ -20,7 +20,7 @@ char copyright[] =
 "@(#) Copyright (c) 1985, 1989 Regents of the University of California.\n\
  All rights reserved.\n";
 
-static char sccsid[] = "@(#)main.c	based on 5.13.1 (2.11BSD) 1997/10/2";
+static char sccsid[] = "@(#)main.c	based on 5.14 (2.11BSD) 2025/3/21";
 #endif
 
 /*
@@ -113,6 +113,7 @@ main(argc, argv)
 	cpend = 0;           /* no pending replies */
 	proxy = 0;	/* proxy not active */
 	crflag = 1;    /* strip c.r. on ascii gets */
+	passive = 1;	/* default to passive mode */
 	/*
 	 * Set up the home directory in case we're globbing.
 	 */

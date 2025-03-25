@@ -4,9 +4,9 @@
  * specifies the terms and conditions for redistribution.
  */
 
-#ifndef lint
-static char sccsid[] = "@(#)gettytab.c	5.1 (Berkeley) 4/29/85";
-#endif not lint
+#if defined(DOSCCS) && !defined(lint)
+static char sccsid[] = "@(#)gettytab.c	5.2 (2.11BSD) 2025/3/22";
+#endif
 
 #include <ctype.h>
 
@@ -30,7 +30,6 @@ getent(bp, name)
 	register int c;
 	register int i = 0, cnt = 0;
 	char ibuf[TABBUFSIZ];
-	char *cp2;
 	int tf;
 
 	tbuf = bp;

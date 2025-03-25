@@ -7,11 +7,14 @@ SRCS=	telnetd.c gettytab.c subr.c init.c
 OBJS=	telnetd.o gettytab.o subr.o init.o
 MAN=	telnetd.0
 MANSRC=	telnetd.8
+VPATH=	../getty
 
 all: telnetd telnetd.0
 
 telnetd: ${OBJS}
 	${CC} ${CFLAGS} ${SEPFLAG} -o $@ ${OBJS}
+
+${OBJS}: ../getty/gettytab.h
 
 telnetd.0: ${MANSRC}
 	/usr/man/manroff ${MANSRC} > ${MAN}

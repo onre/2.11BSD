@@ -25,6 +25,8 @@ static char sccsid[] = "@(#)main.c	5.5.3 (2.11BSD) 2025/3/10";
 #include <ctype.h>
 #include <setjmp.h>
 #include <syslog.h>
+#include <unistd.h>
+#include <strings.h>
 #include <sys/file.h>
 #include "gettytab.h"
 
@@ -50,10 +52,8 @@ int	digit;
 char	hostname[32];
 char	name[16];
 char	dev[] = "/dev/";
-char	ctty[] = "/dev/console";
 char	ttyn[32];
 char	*portselector();
-char	*ttyname();
 
 #define	OBUFSIZ		128
 #define	TABBUFSIZ	512
@@ -437,7 +437,6 @@ putf(cp)
 	char *ttyn, *slash;
 	char datebuffer[60];
 	extern char editedhost[];
-	extern char *ttyname(), *rindex();
 
 	while (*cp) {
 		if (*cp != '%') {

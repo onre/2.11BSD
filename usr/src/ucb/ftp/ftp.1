@@ -13,9 +13,9 @@
 .\" IMPLIED WARRANTIES, INCLUDING, WITHOUT LIMITATION, THE IMPLIED
 .\" WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE.
 .\"
-.\"	@(#)ftp.1	6.13 (Berkeley) 3/21/89
+.\"	@(#)ftp.1	6.14 (2.11BSD) 2025/3/21
 .\"
-.TH FTP 1 "March 14, 1989"
+.TH FTP 1 "March 21, 2025"
 .UC 5
 .SH NAME
 ftp \- ARPANET file transfer program
@@ -471,6 +471,27 @@ option is on (default),
 .I ftp
 will also attempt to automatically log the user in to
 the FTP server (see below).
+.TP
+\fBpassive\fP
+Toggle passive mode.  If passive mode is turned on
+(default is on), the ftp client will send a
+.I PASV
+command for all data connections instead of the usual
+.I PORT
+command.  The
+.I PASV
+command requests that the remote server open a port for the data connection
+and return the address of that port.  The remote server listens on that
+port and the client connects to it.  When using the more traditional
+.I PORT
+command, the client listens on a port and sends that address to the remote
+server, who connects back to it.  Passive mode is useful when using
+\fBftp\fP
+through a gateway router or host that controls the directionality of
+traffic.
+(Note that though ftp servers are required to support the
+.I PASV
+command by RFC 1123, some do not.)
 .TP
 .B prompt
 Toggle interactive prompting.  Interactive prompting
