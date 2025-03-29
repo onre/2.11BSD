@@ -1,3 +1,8 @@
 # 2.11-BSD as a git repo
 
-this repository was automatically generated with 2bsd2git.
+## DO NOT USE
+
+This repository is the testing grounds for https://github.com/onre/2bsd2git
+
+Instead of forking this, get the script and create your own.
+
